@@ -8,6 +8,8 @@
   2.2 [Blackbox testing approach](#blackbox)  
   2.3 [Django testing approach](#django_test)  
   2.4 [CI/CD configuration](#CI_CD)  
+  2.5 [Design standards](#design_standards)  
+Font style:  `"Roboto","Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif;`
 3. [Test Driven Development Methodology](#TDD)  
   3.1 [Overview](#TDD_overview)  
   3.2 [Approach](#TDD_approach)  
