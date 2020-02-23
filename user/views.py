@@ -6,7 +6,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from .forms import SignUpForm, user_view_form
+from .forms import SignUpForm
 from user.models import Profile
 
 import logging
@@ -66,7 +66,11 @@ def user_view(request, user_id):
     first_name = single_profile.user.first_name
     last_name = single_profile.user.last_name
     city = single_profile.city
-
+    description = single_profile.description
+    if(first_name == ""):
+        first_name = username
+    if(description == ""):
+        description = "This user has yet not filled out a description."
     logging.info(username)
     logging.info(company)
     logging.info(first_name)
@@ -78,7 +82,8 @@ def user_view(request, user_id):
         'first_name': first_name,
         'last_name': last_name,
         'company': company,
-        'city': city
+        'city': city,
+        'description': description
     }
 
     # Render the HTML template index.html with the data in the context variable

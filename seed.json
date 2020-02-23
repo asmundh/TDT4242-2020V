@@ -792,7 +792,8 @@
       "city": "",
       "postal_code": "",
       "street_address": "",
-      "categories": []
+      "categories": [],
+      "description": ""
     }
   },
   {
@@ -807,7 +808,8 @@
       "city": "Bergen",
       "postal_code": "",
       "street_address": "",
-      "categories": [2]
+      "categories": [2],
+      "description": "Harry James Potter is the titular protagonist of J. K. Rowling's Harry Potter series. The majority of the books' plot covers seven years in the life of the orphan Harry, who, on his eleventh birthday, learns he is a wizard. Thus, he attends Hogwarts School of Witchcraft and Wizardry to practice magic under the guidance of the kindly headmaster Albus Dumbledore and other school professors along with his best friends Ron Weasley and Hermione Granger. Harry also discovers that he is already famous throughout the novel's magical community, and that his fate is tied with that of Lord Voldemort – the internationally feared Dark Wizard and murderer of his parents, Lily and James. The film and book series revolve around Harry's struggle to adapt to the wizarding world and defeat Voldemort. Harry is considered a fictional icon and has been described by many critics, readers, and audiences as one of the greatest literary and film characters of all time."
     }
   },
   {
@@ -822,8 +824,9 @@
       "city": "Trondheim",
       "postal_code": "",
       "street_address": "",
-      "categories": [3]
-    }
+      "categories": [3],
+      "description": "Also, John Q. Public; Joe Blow; Joe Doakes; Joe Zilch. An average undistinguished man; also, the average citizen. For example, This television show is just right for a John Doe, or It's up to John Q. Public to go to the polls and vote. Originally used from the 13th century on legal documents as an alias to protect a witness, John Doe acquired the sense of “ordinary person” in the 1800s. The variants date from the 1900s. Also see Joe six-pack."
+     }
   },
   {
     "model": "admin.logentry",
