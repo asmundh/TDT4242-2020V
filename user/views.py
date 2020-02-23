@@ -65,17 +65,20 @@ def user_view(request, user_id):
     company = single_profile.company
     first_name = single_profile.user.first_name
     last_name = single_profile.user.last_name
+    city = single_profile.city
 
     logging.info(username)
     logging.info(company)
     logging.info(first_name)
     logging.info(last_name)
+    logging.info(city)
 
     context = {
         'username': username,
         'first_name': first_name,
         'last_name': last_name,
         'company': company,
+        'city': city
     }
 
     # Render the HTML template index.html with the data in the context variable

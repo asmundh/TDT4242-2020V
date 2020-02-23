@@ -22,14 +22,14 @@ class SignUpForm(UserCreationForm):
     city = forms.CharField(max_length=50)
     postal_code = forms.CharField(max_length=50)
     street_address = forms.CharField(max_length=50)
-
+    description = forms.CharField(max_length=2000)
     categories = forms.ModelMultipleChoiceField(queryset=ProjectCategory.objects.all(
     ), help_text='Hold down "Control", or "Command" on a Mac, to select more than one.')
 
     class Meta:
         model = User
         fields = ('username', 'first_name', 'last_name', 'categories', 'company', 'email', 'email_confirmation',
-                  'password1', 'password2', 'phone_number', 'country', 'state', 'city', 'postal_code', 'street_address')
+                  'password1', 'password2', 'phone_number', 'country', 'state', 'city', 'postal_code', 'street_address', 'description')
 
 
 class user_view_form(UserCreationForm):
@@ -50,6 +50,7 @@ class user_view_form(UserCreationForm):
     city = forms.CharField(max_length=50)
     postal_code = forms.CharField(max_length=50)
     street_address = forms.CharField(max_length=50)
+    description = forms.CharField(max_length=2000, help_text="Write a description to increase your reputation")
 
     categories = forms.ModelMultipleChoiceField(queryset=ProjectCategory.objects.all(
     ), help_text='Hold down "Control", or "Command" on a Mac, to select more than one.')
@@ -57,4 +58,4 @@ class user_view_form(UserCreationForm):
     class Meta:
         model = User
         fields = ('username', 'first_name', 'last_name', 'categories', 'company', 'email', 'email_confirmation',
-                  'password1', 'password2', 'phone_number', 'country', 'state', 'city', 'postal_code', 'street_address')
+                  'password1', 'password2', 'phone_number', 'country', 'state', 'city', 'postal_code', 'street_address', 'description')
