@@ -1,0 +1,45 @@
+#header {
+    margin-bottom: 15%;
+}
+
+#content {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+#description {
+    flex: 5
+}
+
+#summary {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 18px;
+    padding-top: 5%;
+}
+
+#rating {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 32px;
+    font-weight: 400;
+    border: 1px solid black;
+    border-radius: 50%;
+    width: 71px;
+    height: 71px;
+    
+}
+
+#reviews {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 10%;
+}
