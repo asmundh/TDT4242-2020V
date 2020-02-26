@@ -79,8 +79,10 @@ def user_view(request, user_id):
         'last_name': last_name,
         'company': company,
         'city': city,
-        'description': description
+        'description': description,
+        'editing': True
     }
+    logging.info(context['editing'])
 
     # Render the HTML template index.html with the data in the context variable
     return render(request, 'user/user_view.html', context=context)

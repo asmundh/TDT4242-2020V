@@ -1,27 +1,81 @@
-{% extends "base.html" %} {% block content %}
-{% load static %}
+{% extends "base.html" %} {% block content %} {% load static %}
 
-<link rel="stylesheet" type="text/css" href="{% static 'css/user_view.css' %}">
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="{% static 'css/user_view.css' %}"
+/>
 <h1 id="header">{{first_name}} {{last_name}}</h1>
 <div id="content">
   <div id="summary">
     <div id="rating">
-      <div id=rating-icon></div>
+      <div id="rating-icon"></div>
       4.7
     </div>
-    <div id=rating-text>
+    <div id="rating-text">
       RATING
     </div>
     <div id="reviews">
-      <img class="ml-1 honey" src="{% static 'img/handshake.png' %}"  alt="Logo image"/>
+      <img
+        class="ml-1 honey"
+        src="{% static 'img/handshake.png' %}"
+        alt="Logo image"
+      />
       12 REVIEWS
     </div>
   </div>
+  <!-- should probably have a safer way of verifying home profile -->
+  {% if user.is_authenticated and user.username == username%}
+  <div id="description">
+    <h2>Description</h2>
+    {% if editing %}
+    <form method="post">
+      <textarea
+        type="text"
+        name="task_description"
+        required
+        maxlength="500"
+        class="form-control"
+      >
+   
+{{ description }}</textarea
+      >
+    </form>
+    <a
+      role="button"
+      class="btn btn-outline-primary my-2 my-sm-0"
+      href="{% url 'user_view' username %}"
+      >Cancel</a
+    >
+    <a role="button" type="submit" class="btn btn-outline-primary my-2 my-sm-0"
+      >Confirm</a
+    >
+    {% else %}
+    <textarea
+      disabled
+      type="text"
+      name="task_description"
+      required
+      maxlength="2000"
+      class="form-control"
+    >
+{{ description }}</textarea
+    >
+    <button
+      class="btn btn-outline-primary my-2 my-sm-0"
+      onclick="swapEditing();"
+    >
+      Edit description
+    </button>
+    {% endif %}
+  </div>
+  {% else %}
   <div id="description">
     <h2>Description</h2>
     <p>
       {{ description }}
     </p>
   </div>
+  {% endif %}
 </div>
 {% endblock %}
