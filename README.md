@@ -17,7 +17,7 @@
       4.1.1 [Give project offers](#411-give-project-offers)  
       4.1.2 [Sign-up page](#412-sign-up-page)  
 5. [New features](#5-new-features)    
-    5.1 [Use case 1](#51-use-case-1)
+    5.1 [Use case 1](#51-use-case-1)  
       5.1.1 [Design](#511-design)  
       5.1.2 [Tests](#512-tests)  
     5.2 [Use case 2](#52-use-case-2)  
@@ -44,6 +44,11 @@ existing web application and to ensure the quality of the new features you add.
 <h3>2.3 Django testing approach</h3> 
 <h3>2.4 CI/CD configuration</h3> 
 <h3>2.5 Design standards</h3> 
+We will stride to keep the existing feel of Agreelance by inspecting the pages 
+and draw inspiration from their layout and style. We will use the design tool 
+[Figma](https://www.figma.com/) during our design phase of implementing the 
+new features.
+
 Font style:  `"Roboto","Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif;`
 
 <h2>3. Test Driven Development Methodology</h2>
@@ -58,6 +63,7 @@ Font style:  `"Roboto","Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verda
 <h2>5. New features</h2>
 <h3>5.1 Use case 1</h3>
 User Profile with description
+
 | ID and Name       | FR3 - Creating user profiles                                                                                                                                                                                                                                                                                                            |
 | ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Created By:       | Odd Gunnar, Åsmund Date Created: 03.02.2020                                                                                                                                                                                                                                                                                             |
@@ -72,7 +78,8 @@ User Profile with description
 | Alternative flows | **3.1 Creating a profile description when signing up** <br/> 1. The user prompts to sign up for Agreelance. <br/> 2. The user fills in a description about themself. <br/> 3. The user sends their sign-up information. <br/> The description is stored in the database alongside other information about the user.                     |
 | Exceptions:       | **2.0.E1 Customer does not write a description** <br/> 1.System displays a banner message: “Your profile has no description. Please add one now!”. <br/>2. The user clicks on the banner to start normal flow. <br/> a) The user clicks on the banner to start normal flow. <br/>b) The user clicks “x” to close the banner.            |  |
 | Priority          | Medium                                                                                                                                                                                                                                                                                                                                  |
-| Frequency of Use  | Not necessarily used. Can be used repeatedly if the user wants to update their description.                                                                                                                                                                                                                                             |
+| Frequency of Use  | Not necessarily used. Can be used repeatedly if the user wants to update their description.    |
+
 <h4>5.1.1 Design</h4>
 ![User_page_1](/uploads/5d198d5b221b8e10959d9c0a7b6791a6/User_page_1.png)
 <h4>5.1.2 Tests</h4>
