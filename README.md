@@ -9,7 +9,7 @@
   2.3 [Django testing approach](#23-django-testing-approach)  
   2.4 [CI/CD configuration](#24-cicd-configuration)  
   2.5 [Design standards](#25-design-standards)
-3. [Test Driven Development Methodology](#3-Test-Driven-Development)  
+3. [Test Driven Development Methodology](#3-test-driven-development-methodology)  
   3.1 [Overview](#31-overview)  
   3.2 [Approach](#32-approach)  
 4. [Implementations](#4-implementations)  
@@ -32,10 +32,10 @@ During this exercise we will practice software development in the DevOps
 environment and white-box and black-box testing approach. 
 
 <h3>1.1. Problem Description</h3>
-From exercise 1, we got the [requirements](#new_features) of some new features from our peer 
+From exercise 1, we got the [requirements](#5-new-features) of some new features from our peer 
 group. In this exercise, we will enhance the existing web application by adding 
 new features. In addition, we are going to practice the 
-[testing approached](#TDD) learned from the lectures to find bugs of the 
+[testing approached](#3-test-driven-development-methodology) learned from the lectures to find bugs of the 
 existing web application and to ensure the quality of the new features you add. 
 
 <h2>2. Standards</h2>  
