@@ -72,10 +72,6 @@ def user_view(request, user_id):
     if(description == ""):
         description = "This user has yet not filled out a description."
     logging.info(username)
-    logging.info(company)
-    logging.info(first_name)
-    logging.info(last_name)
-    logging.info(city)
 
     context = {
         'username': username,
