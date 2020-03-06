@@ -1,5 +1,6 @@
 {% extends "base.html" %} {% block content %} {% load static %}
 
+
 <link
   rel="stylesheet"
   type="text/css"
@@ -28,46 +29,26 @@
   {% if user.is_authenticated and user.username == username%}
   <div id="description">
     <h2>Description</h2>
-    {% if editing %}
-    <form method="post">
-      <textarea
-        type="text"
-        name="task_description"
+
+   <form action="{% url 'edit_description'   %}" method="post">
+    {% csrf_token %}
+     <input
+        type="textarea"
+        name="description"
         required
         maxlength="500"
         class="form-control"
+        value="{{description}}"
       >
-   
-{{ description }}</textarea
-      >
-    </form>
+      <input type="submit"  class="btn btn-primary float-right" value="Edit description"> 
+</form>
+
     <a
       role="button"
       class="btn btn-outline-primary my-2 my-sm-0"
       href="{% url 'user_view' username %}"
       >Cancel</a
     >
-    <a role="button" type="submit" class="btn btn-outline-primary my-2 my-sm-0"
-      >Confirm</a
-    >
-    {% else %}
-    <textarea
-      disabled
-      type="text"
-      name="task_description"
-      required
-      maxlength="2000"
-      class="form-control"
-    >
-{{ description }}</textarea
-    >
-    <button
-      class="btn btn-outline-primary my-2 my-sm-0"
-      onclick="swapEditing();"
-    >
-      Edit description
-    </button>
-    {% endif %}
   </div>
   {% else %}
   <div id="description">

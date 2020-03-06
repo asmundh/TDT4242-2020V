@@ -30,3 +30,13 @@ class SignUpForm(UserCreationForm):
         model = User
         fields = ('username', 'first_name', 'last_name', 'categories', 'company', 'email', 'email_confirmation',
                   'password1', 'password2', 'phone_number', 'country', 'state', 'city', 'postal_code', 'street_address', 'description')
+
+# COPY PASTA
+
+
+class UpdateProfile(forms.ModelForm):
+    description = forms.CharField(max_length=2000)
+
+    class Meta:
+        model = User
+        fields = ('description',)
