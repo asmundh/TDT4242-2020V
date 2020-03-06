@@ -72,7 +72,6 @@ def user_view(request, user_id):
         first_name = username
     if(description == ""):
         description = "This user has yet not filled out a description."
-    logging.info(username)
 
     context = {
         'username': username,
@@ -83,46 +82,9 @@ def user_view(request, user_id):
         'description': description,
         'editing': True
     }
-    logging.info(context['editing'])
 
     # Render the HTML template index.html with the data in the context variable
     return render(request, 'user/user_view.html', context=context)
-
-
-# ...
-
-
-def edit_desctiption(request, user_id):
-    if request.method == 'POST':
-        single_profile = get_object_or_404(Profile, pk=user_id)
-        username = single_profile.user.username
-        company = single_profile.company
-        first_name = single_profile.user.first_name
-        last_name = single_profile.user.last_name
-        city = single_profile.city
-        description = single_profile.description
-        if(first_name == ""):
-            first_name = username
-        if(description == ""):
-            description = "This user has yet not filled out a description."
-        logging.info(username)
-
-        context = {
-            'username': username,
-            'first_name': first_name,
-            'last_name': last_name,
-            'company': company,
-            'city': city,
-            'description': description,
-            'editing': True
-        }
-        logging.info(context['editing'])
-        #single_profile.description = string
-        single_profile.save()
-        # Always return an HttpResponseRedirect after successfully dealing
-        # with POST data. This prevents data from being posted twice if a
-        # user hits the Back button.
-        return render(request, 'user/user_view.html', context=context)
 
 # COPY PASTA
 
@@ -131,9 +93,14 @@ def update_profile(request):
     if request.method == 'POST':
         form = UpdateProfile(request.POST, instance=request.user)
         if form.is_valid():
-            print()
-            request.user.profile.description = form.cleaned_data['description']
-            request.user.save()
-            return HttpResponseRedirect(reverse('index'))
+            user = request.user
+            user.profile.description = form.cleaned_data['description']
+            user.save()
+
+            messages.success(
+                request, 'Your account has been updated.')
+            return redirect('user_view', user.username)
     else:
-        return HttpResponseRedirect(reverse('index'))
+        messages.error(
+            request, 'Your account has not been created and is awaiting verification.')
+        return redirect('user_view', user.username)
