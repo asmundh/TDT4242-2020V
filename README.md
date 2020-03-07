@@ -1,151 +1,95 @@
-# Agreelance
+# Aggrelance Project
+Åsmund Haugse & Odd Gunnar Aspaas
 
-The best way to agree on the price of your freelancing jobs!
+1. [Introduction](#1-introduction)  
+  1.1 [Problem description](#11-problem-description)
+2. [Standards](#2-standards)  
+  2.1 [Whitebox testing approach](#21-whitebox-testing-approach)  
+  2.2 [Blackbox testing approach](#22-blackbox-testing-approach)  
+  2.3 [Django testing approach](#23-django-testing-approach)  
+  2.4 [CI/CD configuration](#24-cicd-configuration)  
+  2.5 [Design standards](#25-design-standards)
+3. [Test Driven Development Methodology](#3-test-driven-development-methodology)  
+  3.1 [Overview](#31-overview)  
+  3.2 [Approach](#32-approach)  
+4. [Implementations](#4-implementations)  
+   4.1 [Boundary value tests](#41-boundry-value-tests)  
+      4.1.1 [Give project offers](#411-give-project-offers)  
+      4.1.2 [Sign-up page](#412-sign-up-page)  
+5. [New features](#5-new-features)    
+    5.1 [Use case 1](#51-use-case-1)  
+      5.1.1 [Design](#511-design)  
+      5.1.2 [Tests](#512-tests)  
+    5.2 [Use case 2](#52-use-case-2)  
+      5.2.1 [Design](#521-design)  
+      5.2.2 [Tests](#522-tests)  
+    5.3 [Use case 3](#53-use-case-3)  
+      5.3.1 [Design](#531-design)  
+      5.3.2 [Tests](#532-tests)  
 
-## Code and structure
+<h2>1. Introduction</h2>
+During this exercise we will practice software development in the DevOps 
+environment and white-box and black-box testing approach. 
 
-.gitlab-ci.yml - gitlab ci
-Procfile - heroku kjører serveren
+<h3>1.1. Problem Description</h3>
+From exercise 1, we got the [requirements](#5-new-features) of some new features from our peer 
+group. In this exercise, we will enhance the existing web application by adding 
+new features. In addition, we are going to practice the 
+[testing approached](#3-test-driven-development-methodology) learned from the lectures to find bugs of the 
+existing web application and to ensure the quality of the new features you add. 
 
-- **agreelance/** django project folder containing the project modules
-  - **core/** contains all the project templates
-    - **index.html** One of the project templates that uses a template language to insert if, loops and variables into html.
-  - **home/** user profile - overview over user projects
-    - **static/** - contains static files like js and images
-    - **templatetags/** folder containing [template tags](https://docs.djangoproject.com/en/2.1/ref/templates/builtins/). Methods you import into your templates. Can be used in combination with views.
-    - **admins.py** - file contaning definitions to connect models to the django admin panel
-    - **urls.py** - contains mapping between urls and views
-    - **models.py** - contains data models
-    - **tests/** - contains tests for the module. [View Testing in Django](https://docs.djangoproject.com/en/2.1/topics/testing/) for more.
-    - **views.py** - Controller in MVC. Methods for rendering and accepting user data
-    - **forms.py**  -  defenition of forms. Used to render html forms and verify user input
+<h2>2. Standards</h2>  
+<h3>2.1 Whitebox testing approach</h3> 
+<h3>2.2 Blackbox testing approach</h3> 
+<h3>2.3 Django testing approach</h3> 
+<h3>2.4 CI/CD configuration</h3> 
+<h3>2.5 Design standards</h3> 
+We will stride to keep the existing feel of Agreelance by inspecting the pages 
+and draw inspiration from their layout and style. We will use the design tool 
+[Figma](https://www.figma.com/) during our design phase of implementing the 
+new features.
 
+Font style:  `"Roboto","Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif;`
 
-  - **payment/** - module handling payment
-  - **projects/** - The largest module of the project containing code for creating project and tasks. Upload files, view files, adding roles and user to roles.
-  - **agreelance/** - The projects main module contaning settings.
-  - **static/** - common static files
-  - **user/** - module extending django's user model with a profile contaning more information about the user.
-  - **manage.py** - entry point for running the project.
-  - **seed.json** - contains seed data for the project to get it up and running quickly
+<h2>3. Test Driven Development Methodology</h2>
+<h3>3.1 Overview</h3>
+<h3>3.2 Approach</h3>
 
+<h2>4. Implementations</h2>
+<h3>4.1 Boundary value tests</h3>
+<h4>4.1.1 Give project offers</h4>
+<h4>4.1.2 Sign-up page</h4>
 
+<h2>5. New features</h2>
+<h3>5.1 Use case 1</h3>
+User Profile with description
 
-## Get started
-It's reccomended to have a look at: https://www.djangoproject.com/start/
+| ID and Name       | FR3 - Creating user profiles                                                                                                                                                                                                                                                                                                            |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Created By:       | Odd Gunnar, Åsmund Date Created: 03.02.2020                                                                                                                                                                                                                                                                                             |
+| Primary Actor     | Entrepreneur                                                                                                                                                                                                                                                                                                                            |
+| Secondary Actor   | Customer, Database, Server                                                                                                                                                                                                                                                                                                              |
+| Description       | All users should have a profile. This profile should have a field where the person can choose to write about themself and their skills.                                                                                                                                                                                                 |
+| Definitions       | Account: The entity a user needs to have to be able to maneuver and interact with Agreelance. <br/>Profile: Information about an account.                                                                                                                                                                                               |
+| Trigger           | The user signs up to Agreelance or pushes the edit profile button in settings.                                                                                                                                                                                                                                                          |
+| Preconditions     | PRE-1: A user must have an account. <br/> PRE-2: The user must be authenticated. <br/> PRE-3: Database is online.                                                                                                                                                                                                                       |
+| Postconditions    | POST-1: New description about a person is stored in database.<br/> POST-2: New description is visible to other users of the system.                                                                                                                                                                                                     |
+| Normal flow       | **3.0 Creating a profile description for existing account** <br/> 1. The user navigates to their profile page. <br/> 2. The user presses the “Edit profile” button to enter edit mode. <br/> 3. The user changes their profile description. <br/> 4. The user confirms the change. <br/> 5. The change is stored in the database. <br/> |
+| Alternative flows | **3.1 Creating a profile description when signing up** <br/> 1. The user prompts to sign up for Agreelance. <br/> 2. The user fills in a description about themself. <br/> 3. The user sends their sign-up information. <br/> The description is stored in the database alongside other information about the user.                     |
+| Exceptions:       | **2.0.E1 Customer does not write a description** <br/> 1.System displays a banner message: “Your profile has no description. Please add one now!”. <br/>2. The user clicks on the banner to start normal flow. <br/> a) The user clicks on the banner to start normal flow. <br/>b) The user clicks “x” to close the banner.            |  |
+| Priority          | Medium                                                                                                                                                                                                                                                                                                                                  |
+| Frequency of Use  | Not necessarily used. Can be used repeatedly if the user wants to update their description.    |
 
-Basic tutorial that walks trough what the different files do.
-https://docs.djangoproject.com/en/2.0/intro/tutorial01/
+<h4>5.1.1 Design</h4>
+![User_page_1](/uploads/5d198d5b221b8e10959d9c0a7b6791a6/User_page_1.png)
+<h4>5.1.2 Tests</h4>
 
-Create a virtualenv https://docs.python-guide.org/dev/virtualenvs/
+<h3>5.2 Use case 2</h3>
+<h4>5.2.1 Design</h4>
+<h4>5.2.2 Tests</h4>
 
+<h3>5.3 Use case 3</h3>
+<h4>5.3.1 Design</h4>
+<h4>5.3.2 Tests</h4>
 
-## Local setup
-
-### Installation with examples for ubuntu. Windows and OSX is mostly the same
-
-Fork the project and clone it to your machine.
-
-#### Setup and activation of virtualenv (env that prevents python packages from being installed globaly on the machine)
-Naviagate into the project folder.
-
-`pip install virtualenv`
-
-`virtualenv env`
-
-For mac/linux:
-
-`source env/bin/activate`
-
-For windows:
-
-`env\Scripts\activate.bat`
-
-If you get an error related to charmap on Windows, run this command:
-`set PYTHONIOENCODING=UTF-8`
-
-
-#### Install python requirements
-
-`pip install -r requirements.txt`
-
-**Note: Mac users may get an error related to psycopg2. To fix this try running:**
-
-`pip install psycopg2==2.7.5`
-
-
-#### Migrate database
-
-`python manage.py migrate`
-
-
-#### Create superuser
-
-Create a local admin user by entering the following command:
-
-`python manage.py createsuperuser`
-
-Only username and password is required
-
-
-#### Start the app
-
-`python manage.py runserver`
-
-
-#### Add initial data
-
-You can add initial data either by going to the url the app is running on locally and adding `/admin` to the url.
-
-Add some categories and you should be all set.
-
-Or by entering 
-
-`python manage.py loaddata seed.json`
-
-
-## Email
-Copy `agreelance/local_settings_example.py` to `agreelance/local_settings.py` and replace the email placeholder values with values dscribes in the email section later in the instructions.
-
-To support sending of email you will have to create a gmail account and turn on less secure apps. *Do not use your own email as Google might lock the account*. See https://support.google.com/accounts/answer/6010255?hl=en for instructions for turning on less secure apps.
-
-To get email working on heroku you might have to visit https://accounts.google.com/DisplayUnlockCaptcha and click `continue` as the heroku server is in another location and Google thinks it is a hacking attempt. 
-
-## Continuous integration
-Continuous integration will build the code pushed to master and push it to your heroku app so you get a live version of your latest code by just pushing your code to GitLab.
-
-1. Fork the project at GitLab
-2. Create a heroku account and an app.
-3. Set the project in the .gitlab-cs.yml file by replacing `<Your-herokuproject-name>` with the name of the Heroku app you created
-`- dpl --provider=heroku --app=<Your-herokuproject-name> --api-key=$HEROKU_STAGING_API_KEY`
-4. Set varibles at GitLab
-    * settings > ci > Environment Variables
-    * `HEROKU_STAGING_API_KEY` = heroku > Account Settings > API Key
-4. Add heroku database
-   * Resources > Add ons > search for postgres > add first option
-5. Set variables at heroku. Settings > Config vars > Reveal vars
-   * `DATABASE_URL` = Should be set by default. If not here is where you can find it: Resources > postgress > settings > view credentials > URI
-   * `EMAIL_HOST_PASSWORD` email password. Not mandatory if you do not want to send email
-   * `EMAIL_HOST_USER` email adress. Not mandatory if you do not want to send email
-   * `IS_HEROKU` = `IS_HEROKU`
-6. On GitLab go to CI / CD in the repository menu and select `Run Pipeline` if it has not already started. When both stages complete the app should be available on heroku. Staging will fail from timeout as Heroku does not give the propper response to end the job. But the log should state that the app was deployed.
-7. Setup the applications database.
-  * Install heroku CLI by following: https://devcenter.heroku.com/articles/heroku-cli
-  * Log in to the Heroku CLI by entering `heroku login`. This opens a webbrowser and you accept the login request.
-  * Migrate database by entering
-  `heroku run python manage.py migrate -a <heroku-app-name>`. `Heroku run` will run the folowing command on your heroku instance. Remember to replace `<heroku-app-name>` with your app name
-  * and create an admin account by running
-  `heroku run python manage.py createsuperuser -a <heroku-app-name>`.
-  * seed database `heroku run python manage.py loaddata seed.json -a <heroku-app-name>`
-
-### Reset Database
-`heroku pg:reset DATABASE_URL -a <heroku-app-name>`
-
-## Data seeding
-The data seed provided contains 3 users:
-
-Username | Password | Description
----|---|---
-admin|qwerty123|Admin user that owns one project
-harrypotter|qwerty123|
-joe|qwerty123|
+  
