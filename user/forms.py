@@ -36,7 +36,8 @@ class SignUpForm(UserCreationForm):
 
 class UpdateProfile(forms.ModelForm):
     description = forms.CharField(max_length=2000, required=False)
+    email_notifications = forms.BooleanField(required=False)
 
     class Meta:
         model = User
-        fields = ('description',)
+        fields = ('description', 'email_notifications')

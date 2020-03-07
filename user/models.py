@@ -17,6 +17,7 @@ class Profile(models.Model):
     categories = models.ManyToManyField(
         'projects.ProjectCategory', related_name='competance_categories')
     description = models.TextField(max_length=2000, blank=True)
+    email_notifications = models.BooleanField(default=True)
 
     def __str__(self):
         return self.user.username

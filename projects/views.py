@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
+from django.core import mail
 
 
 def projects(request):
@@ -35,7 +36,6 @@ def new_project(request):
             project.save()
 
             people = Profile.objects.filter(categories__id=project.category.id)
-            from django.core import mail
             for person in people:
                 if person.user.email:
                     try:
@@ -166,28 +166,36 @@ def project_view(request, project_id):
                     pk=request.POST.get('taskvalue'))
                 task_offer.offerer = request.user.profile
                 task_offer.save()
-
                 owner = project.user.user
-                sender = task_offer.offerer
-                project_name = project.title
-                current_site = get_current_site(request)
+                if owner.profile.email_notifications:
+                    print("email_notifications turned on!")
+                    sender = task_offer.offerer
+                    project_name = project.title
+                    current_site = get_current_site(request)
+                    task_title = task_offer.task.title
+                    dummy_mail = "agreelance.emailsender@gmail.com"
+                    try:
+                        with mail.get_connection() as connection:
+                            print(
+                                f"owner: {owner}, \n sender: {sender.user.first_name}, \n current site: {current_site}, \n connection: {connection}")
 
-                try:
-                    with mail.get_connection() as connection:
-                        mail.EmailMessage(
-                            "Your Project: " + project_name, "A new project you might be interested in was created and can be viwed at " +
-                            current_site.domain + '/projects/' +
-                            str(project.id), "Agreelancer", [
-                                owner.email],
-                            connection=connection,
-                        ).send()
+                            mail.EmailMessage(
+                                "Your Project: " + project_name +
+                                "has a new offer on task: " + task_title + "!",  # title
+                                f'''The entrepeneur  {sender.user.first_name} {sender.user.last_name} has given you an offer on task {task_title} related to project {project_name}. \n You should let him or her know if you accept the offer! \n \nFind your project at {current_site.domain}/projects/{str(project.id)}
+                                ''',  # content
+                                dummy_mail,  # sender
+                                [dummy_mail, owner.email],  # reciever
+                                connection=connection,
+                            ).send()
+                            messages.success(
+                                request, 'Sending of email to ' + owner.email)
+
+                    except Exception as e:
                         messages.success(
-                            request, 'Sending of email to ' + owner.email)
-
-                except Exception as e:
-                    messages.success(
-                        request, 'Sending of email to ' + owner.email + " failed: " + str(e))
-
+                            request, 'Sending of email to ' + owner.email + " failed: " + str(e))
+                else:
+                    print("email notifications turned off")
         task_offer_form = TaskOfferForm()
 
         return render(request, 'projects/project_view.html', {
