@@ -22,7 +22,7 @@ class SignUpForm(UserCreationForm):
     city = forms.CharField(max_length=50)
     postal_code = forms.CharField(max_length=50)
     street_address = forms.CharField(max_length=50)
-    description = forms.CharField(max_length=2000)
+    description = forms.CharField(max_length=2000, required=False)
     categories = forms.ModelMultipleChoiceField(queryset=ProjectCategory.objects.all(
     ), help_text='Hold down "Control", or "Command" on a Mac, to select more than one.')
 
@@ -35,7 +35,7 @@ class SignUpForm(UserCreationForm):
 
 
 class UpdateProfile(forms.ModelForm):
-    description = forms.CharField(max_length=2000)
+    description = forms.CharField(max_length=2000, required=False)
 
     class Meta:
         model = User
