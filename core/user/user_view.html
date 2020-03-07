@@ -40,7 +40,17 @@
         class="form-control"
         value="{{description}}"
       >
+      <div>
+        {% if email_notifications %}
+        <input type="checkbox"  name="email_notifications" checked>
+        {% else %}
+        <input type="checkbox"  name="email_notifications">
+        {% endif %}
+        <label for="email_notification">Email notifications on new task offers</label>
+
+      </div>
       <input type="submit"  class="btn btn-primary float-right" value="Edit description"> 
+
 </form>
 
     <a
