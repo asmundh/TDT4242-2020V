@@ -67,12 +67,12 @@ class ProjectViewTestSuite(TestCase):
 
         post = self.factory.post(
             '/project'+str(self.user_owner.id),
-            { 
+            {
                 'taskofferid': self.task_1_offer.id,
                 'offer_response': '',
                 'feedback': 'This is purely test feedback, I do not actually accept',
                 'status': 'a'
-            }    
+            }
         )
 
         post.user = self.user_bidder
@@ -109,3 +109,4 @@ class ProjectViewTestSuite(TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+3
