@@ -145,8 +145,10 @@ class Delivery(models.Model):
         (PENDING, 'Pending'),
         (DECLINED, 'Declined'),
     )
+
     status = models.CharField(max_length=8, choices=STATUS_CHOICES, default=PENDING)
     feedback = models.TextField(max_length=500)
+    rating = models.IntegerField(name='delivery_rating', default=0)
 
 
 class TaskOffer(models.Model):

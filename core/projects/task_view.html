@@ -3,6 +3,8 @@
 {% load bootstrap4 %}
 {% load static %}
 {% load project_extras %}
+{%load ratings%}
+
 
 {% block title %}Task{% endblock %}
 
@@ -271,7 +273,7 @@
           <h3>Feedback: </h3>
           {{delivery.feedback}}
         </div>
-          <h4>  Status: {{delivery.get_status_display}}</h4>
+          <h4>  Status: {{delivery.get_status_display}}</h4>  
             {% if user_permissions.owner and delivery.status == 'p' %}
             <div>
               <div>

@@ -2,14 +2,13 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.shortcuts import get_object_or_404
 
-class UserReview(models.Model):
-    givenRating = models.IntegerField(default=0)
-    taskPerformed = models.ForeignKey("projects.Task", on_delete=models.CASCADE)
+# class UserReview(models.Model):
+#     givenRating = models.IntegerField(default=0)
+#     taskPerformed = models.ForeignKey("projects.Task", on_delete=models.CASCADE)
 
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
 
 
 class Profile(models.Model):
@@ -22,15 +21,10 @@ class Profile(models.Model):
     postal_code = models.TextField(max_length=50, blank=True)
     street_address = models.TextField(max_length=50, blank=True)
     categories = models.ManyToManyField('projects.ProjectCategory', related_name='competance_categories')
-    user_reviews = models.ManyToManyField(UserReview, related_name='user_reviews')
 
-    @property
-    def get_average_rating(self):
-        #             project.category =  get_object_or_404(ProjectCategory, id=request.POST.get('category_id'))
-        project_ratings = get_object_or_404(Profile, id=request.POST.get('user_reviews'))
-        return user_reviews.all().sum()
-        # aggregate(average=models.Sum('given_rating'))['total']
-
+    # @property
+    # def get_average_rating(self):
+    #     return 25
     def __str__(self):
         return self.user.username
 

@@ -1,5 +1,6 @@
 from django import template
 from django.contrib.auth.models import User
+from projects.models import Delivery
 from django.core.exceptions import ObjectDoesNotExist
 from ..models import TaskOffer
 
@@ -61,6 +62,12 @@ def get_accepted_task_offer(task):
         pass
 
     return task_offer
+    
+@register.filter
+def get_delivery(task):
+    query = Delivery.objects.filter(task=task.id)
+    print(query.first().delivery_rating)
+    return query.first()
 
 @register.filter
 def get_project_participants_string(project):

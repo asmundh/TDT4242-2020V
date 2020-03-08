@@ -1,7 +1,7 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from user.models import Profile
 from .models import Project, Task, TaskFile, TaskOffer, Delivery, ProjectCategory, Team, TaskFileTeam, directory_path
-from .forms import ProjectForm, TaskFileForm, ProjectStatusForm, TaskOfferForm, TaskOfferResponseForm, TaskPermissionForm, DeliveryForm, TaskDeliveryResponseForm, TeamForm, TeamAddForm
+from .forms import ProjectForm, TaskFileForm, TaskDeliveryRatingForm, ProjectStatusForm, TaskOfferForm, TaskOfferResponseForm, TaskPermissionForm, DeliveryForm, TaskDeliveryResponseForm, TeamForm, TeamAddForm
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -72,6 +72,8 @@ def project_view(request, project_id):
         if request.method == 'POST' and 'offer_response' in request.POST:
             instance = get_object_or_404(TaskOffer, id=request.POST.get('taskofferid'))
             offer_response_form = TaskOfferResponseForm(request.POST, instance=instance)
+            delivery_rating_form = TaskDeliveryRatingForm(request.POST, instance=instance)
+
             if offer_response_form.is_valid():
                 offer_response = offer_response_form.save(commit=False)
 
@@ -84,6 +86,8 @@ def project_view(request, project_id):
 
                 offer_response.save()
         offer_response_form = TaskOfferResponseForm()
+        delivery_rating_form = TaskDeliveryRatingForm()
+
 
         if request.method == 'POST' and 'status_change' in request.POST:
             status_form = ProjectStatusForm(request.POST)
@@ -99,6 +103,7 @@ def project_view(request, project_id):
         'status_form': status_form,
         'total_budget': total_budget,
         'offer_response_form': offer_response_form,
+        'delivery_rating_form': delivery_rating_form,
         })
 
 
@@ -320,7 +325,8 @@ def task_view(request, project_id, task_id):
                 'team_form': team_form,
                 'team_add_form': team_add_form,
                 'team_files': team_files,
-                'per': per
+                'per': per,
+                # 'delivery': delivery,
                 })
 
     return redirect('/user/login')
