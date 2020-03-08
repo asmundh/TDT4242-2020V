@@ -1,9 +1,9 @@
-from django.test import TestCase
-
-from .views import get_user_task_permissions
-from .models import Task, Project, ProjectCategory, TaskOffer, Team
-from user.models import Profile
 from django.contrib.auth.models import User
+from django.test import TestCase, Client, RequestFactory
+import unittest
+from projects.views import project_view, get_user_task_permissions
+from .models import Project, Task, TaskFile, TaskOffer, Delivery, ProjectCategory, Team, TaskFileTeam, directory_path
+from user.models import User, Profile
 from django.urls import reverse
 
 
@@ -269,7 +269,7 @@ class GetUserTaskPermissionsTest(TestCase):
         self.assertIs(task_permissions['view_task'], True)
 
 
-class TaskViewTests(TestCase):
+class ProjectViewTests(TestCase):
 
     def setUp(self):
         self.owner_user = User.objects.create_user(
@@ -312,7 +312,7 @@ class TaskViewTests(TestCase):
 
         self.owner_task.save()
 
-    def test_task_view_not_logged_in(self):
+    def test_project_view_not_logged_in(self):
         task_id = self.owner_task.id
         project_id = self.owner_task.project_id
         response = self.client.get(
@@ -326,3 +326,170 @@ class TaskViewTests(TestCase):
         response = self.client.get(
             reverse('task_view', kwargs={'task_id': task_id, 'project_id': project_id}))
         self.assertEqual(response.status_code, 200)
+
+
+class ProjectViewTests(TestCase):
+
+    def setUp(self):
+        self.owner_user = User.objects.create_user(
+            username='john5',
+            first_name='john5',
+            last_name='johnson5',
+            email='jlennon5@beatles.com',
+        )
+        self.owner_user.save()
+        self.category = ProjectCategory.objects.create(name="Painting")
+        self.category.save()
+        self.owner_project = Project.objects.create(
+            user=self.owner_user.profile,
+            title='Test project',
+            description='Description',
+            category=self.category
+        )
+        self.owner_project.save()
+        self.project_manager = User.objects.create_user(
+            username='john3',
+            first_name='john3',
+            last_name='johnson3',
+            email='jlennon3@beatles.com'
+        )
+        self.project_manager.save()
+        self.owner_task = Task.objects.create(
+            project=self.owner_project,
+            title='Task name',
+            description='Task description'
+        )
+        self.offer = TaskOffer.objects.create(
+            task=self.owner_task,
+            offerer=self.project_manager.profile,
+            title="Offer title",
+            price=1,
+            description="Offer description",
+            status=TaskOffer.ACCEPTED
+        )
+        self.offer.save()
+
+        self.owner_task.save()
+
+    def test_project_view_not_logged_in(self):
+        task_id = self.owner_task.id
+        project_id = self.owner_task.project_id
+        response = self.client.get(
+            reverse('project_view', kwargs={'project_id': project_id}))
+        self.assertEqual(response.status_code, 200)
+
+    def test_project_view_logged_in(self):
+        self.client.force_login(user=self.owner_user)
+        task_id = self.owner_task.id
+        project_id = self.owner_task.project_id
+        response = self.client.get(
+            reverse('project_view', kwargs={'project_id': project_id}))
+        self.assertEqual(response.status_code, 200)
+
+
+class ProjectViewTestSuite(TestCase):
+
+    def setUp(self):
+        self.client = Client()
+        self.factory = RequestFactory()
+
+        projectCategory = ProjectCategory.objects.create(
+            pk=1, name="Gardening")
+
+        self.user_owner = User.objects.create_user(
+            pk=1,
+            username='Project_owner',
+            email='proj_owner@gmail.com',
+            password='HemmeligWooo213'
+        )
+
+        self.user_owner_profile = Profile.objects.get(user=self.user_owner)
+
+        self.user_bidder = User.objects.create_user(
+            username='Project_bidder',
+            email='proj_bidder@gmail.com',
+            password='HemmeligWooo213'
+        )
+
+        self.test_project = Project.objects.create(
+            pk=1,
+            user=self.user_owner_profile,
+            title='Test Project',
+            description='This is nothing more than a test. Stay calm.',
+            category=projectCategory,
+            status="o"
+        )
+
+        self.task_1 = Task.objects.create(
+            pk=1,
+            project=self.test_project,
+            title='This task is purely for testing. I will not pay',
+            description='^Same as above',
+            budget=150000000
+        )
+
+        self.task_1_offer = TaskOffer.objects.create(
+            pk=1,
+            task=self.task_1,
+            title='This offer is purely for testing. I will not actually complete the task',
+            description='Same as above',
+            price=150000000,
+            offerer=self.user_bidder.profile
+        )
+
+    def test_project_view(self):
+        request = self.factory.get('/project/'+str(self.user_owner.id))
+        request.user = self.user_owner
+        response = project_view(request, self.test_project.id)
+        self.assertEqual(200, response.status_code)
+
+        post = self.factory.post(
+            '/project'+str(self.user_owner.id),
+            {
+                'offer_response': '',
+                'status': 'a'
+            }
+        )
+
+        post.user = self.user_bidder
+        response = project_view(post, self.test_project.id)
+        self.assertEqual(200, response.status_code)
+
+        post = self.factory.post(
+            '/project/'+str(self.user_owner.id),
+            {
+                'status_change': '',
+                'status': 'i'
+            }
+        )
+        post.user = self.user_owner
+        response = project_view(post, self.test_project.id)
+        self.assertEqual(response.status_code, 200)
+
+        post = self.factory.post(
+            '/project/'+str(self.user_bidder.id),
+            {
+                'offer_submit': '',
+                'title': 'This is purely a test offer. I have not actually done anything.',
+                'description': 'Same as above.',
+                'price': 1500000,
+                'taskvalue': self.task_1.id
+            }
+        )
+        post.user = self.user_bidder
+        response = project_view(post, self.test_project.id)
+        self.assertEqual(200, response.status_code)
+
+        post = self.factory.post(
+            '/project'+str(self.user_owner.id),
+            {
+                'taskofferid': self.task_1_offer.id,
+                'offer_response': '',
+                'feedback': 'This is purely test feedback, I do not actually accept',
+                'status': 'a'
+            }
+        )
+
+        post.user = self.user_bidder
+        response = project_view(post, self.test_project.id)
+        self.assertEqual(200, response.status_code)
