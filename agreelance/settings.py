@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     'bootstrap4',
     'django_icons',
     'payment.apps.PaymentConfig',
-    'star_ratings',
 ]
 
 MIDDLEWARE = [

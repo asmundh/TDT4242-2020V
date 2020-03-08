@@ -66,7 +66,7 @@ def get_accepted_task_offer(task):
 @register.filter
 def get_delivery(task):
     query = Delivery.objects.filter(task=task.id)
-    print(query.first().delivery_rating)
+    # print(query.first().delivery_rating)
     return query.first()
 
 @register.filter

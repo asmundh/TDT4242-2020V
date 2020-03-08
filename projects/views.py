@@ -71,8 +71,9 @@ def project_view(request, project_id):
 
         if request.method == 'POST' and 'offer_response' in request.POST:
             instance = get_object_or_404(TaskOffer, id=request.POST.get('taskofferid'))
+            deliveryInstance = Delivery.objects.filter(task=request.POST.get('taskofferid'))
             offer_response_form = TaskOfferResponseForm(request.POST, instance=instance)
-            delivery_rating_form = TaskDeliveryRatingForm(request.POST, instance=instance)
+            delivery_rating_form = TaskDeliveryRatingForm(request.POST, instance=deliveryInstance.first())
 
             if offer_response_form.is_valid():
                 offer_response = offer_response_form.save(commit=False)
@@ -85,6 +86,16 @@ def project_view(request, project_id):
 
 
                 offer_response.save()
+            if delivery_rating_form.is_valid():
+                rating_response = delivery_rating_form.save(commit=False)
+                ratingReceived = delivery_rating_form.cleaned_data['rating']
+                print(delivery_rating_form)
+                rating_response.delivery_rating = ratingReceived
+                rating_response.save()
+                print(rating_response.delivery_rating)
+                
+
+
         offer_response_form = TaskOfferResponseForm()
         delivery_rating_form = TaskDeliveryRatingForm()
 
