@@ -1,0 +1,73 @@
+{% extends "base.html" %} {% block content %} {% load static %}
+
+
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="{% static 'css/user_view.css' %}"
+/>
+<h1 id="header">{{first_name}} {{last_name}}</h1>
+<div id="content">
+  <div id="summary">
+    <div id="rating">
+      <div id="rating-icon"></div>
+      {{get_average_rating}}
+    </div>
+    <div id="rating-text">
+      RATING
+    </div>
+    <div id="reviews">
+      <img
+        class="ml-1 honey"
+        src="{% static 'img/handshake.png' %}"
+        alt="Logo image"
+      />
+      {{get_rating_count}} REVIEWS
+    </div>
+  </div>
+  <!-- should probably have a safer way of verifying home profile -->
+  {% if user.is_authenticated and user.username == username%}
+  <div id="description">
+    <h2>Description</h2>
+
+
+   <form action="{% url 'edit_description'   %}" method="post">
+    {% csrf_token %}
+     <input
+        type="textarea"
+        name="description"
+        required
+        maxlength="500"
+        class="form-control"
+        value="{{description}}"
+      >
+      <div>
+        {% if email_notifications %}
+        <input type="checkbox"  name="email_notifications" checked>
+        {% else %}
+        <input type="checkbox"  name="email_notifications">
+        {% endif %}
+        <label for="email_notification">Email notifications on new task offers</label>
+
+      </div>
+      <input type="submit"  class="btn btn-primary float-right" value="Edit description"> 
+
+</form>
+
+    <a
+      role="button"
+      class="btn btn-outline-primary my-2 my-sm-0"
+      href="{% url 'user_view' username %}"
+      >Cancel</a
+    >
+  </div>
+  {% else %}
+  <div id="description">
+    <h2>Description</h2>
+    <p>
+      {{ description }}
+    </p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

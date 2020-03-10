@@ -4,7 +4,7 @@ test:
     # this configures Django application to use attached postgres database that is run on `postgres` host
     - apt-get update -qy
     - pip install -r requirements.txt
-    - python manage.py test
+    - coverage run manage.py test
 
 staging:
   type: deploy
@@ -15,5 +15,5 @@ staging:
     - gem install dpl
     - dpl --provider=heroku --app='tdt4242-t26' --api-key=$HEROKU_STAGING_API_KEY
   only:
-    - "dev"
+    - "master"
 #https://docs.gitlab.com/ee/ci/examples/test-and-deploy-python-application-to-heroku.html
