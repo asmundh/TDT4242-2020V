@@ -6,20 +6,6 @@ from .models import Project, Task, TaskFile, TaskOffer, Delivery, ProjectCategor
 # Create your tests here.
 
 
-class testProjectViewSuite(TestCase):
-    def testUpper(self):
-        self.assertEqual(2, 5)
-
-    def testCenter(self):
-        self.assertEqual(4, 4)
-
-    def testLower(self):
-        self.assertEqual(2, 2)
-
-class test_project_view(TestCase):
-    def setup(self):
-        project = Project.n
-
 
 # if __name__ == '__main__':
 #     unittest.main()
