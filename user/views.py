@@ -62,8 +62,6 @@ def user_view(request, user_id):
     single_profile = get_object_or_404(
         Profile, user__username=user_id)
 
-    print(single_profile.get_average_rating)
-
     username = single_profile.user.username
     company = single_profile.company
     first_name = single_profile.user.first_name
@@ -108,8 +106,6 @@ def update_profile(request):
             messages.success(
                 request, 'Your account has been updated.')
             return redirect('user_view', user.username)
-        else:
-            print("form is not valid man")
     else:
         messages.error(
             request, 'Your account has not been created and is awaiting verification.')

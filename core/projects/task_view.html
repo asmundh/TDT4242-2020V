@@ -3,7 +3,6 @@
 {% load bootstrap4 %}
 {% load static %}
 {% load project_extras %}
-{%load ratings%}
 
 
 {% block title %}Task{% endblock %}
@@ -293,6 +292,8 @@
                         {{delivery.comment}}
                         {% csrf_token %}
                         {% bootstrap_form deliver_response_form %}
+                        {% bootstrap_form delivery_rating_form %}
+
                         <input type="hidden" name="delivery-id" value="{{delivery.id}}"/>
                       </div>
                       <div class="modal-footer">

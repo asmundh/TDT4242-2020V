@@ -111,8 +111,9 @@
                     <h3 class="mt-3">Response: </h3>
                     {% csrf_token %}
                     {% bootstrap_form offer_response_form %}
-                    {% bootstrap_form delivery_rating_form %}
-
+                    {% if delivery_rating_form%}
+                      {% bootstrap_form delivery_rating_form %}
+                    {% endif%}
                     <input type="hidden" name="taskofferid" value="{{task_offer.id}}">
 
                 </div>

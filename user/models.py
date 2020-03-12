@@ -22,7 +22,8 @@ class Profile(models.Model):
 
     @property
     def get_average_rating(self):
-        queried_deliveries = apps.get_model('projects.delivery').objects.filter(responding_user=self)
+        queried_deliveries = apps.get_model(
+            'projects.delivery').objects.filter(delivery_user=self)
         sum_of_ratings = 0
         if (queried_deliveries.count() > 0):
             for delivery in queried_deliveries:
@@ -33,7 +34,8 @@ class Profile(models.Model):
             return 0
 
     def get_rating_count(self):
-        queried_deliveries = apps.get_model('projects.delivery').objects.filter(responding_user=self)
+        queried_deliveries = apps.get_model(
+            'projects.delivery').objects.filter(delivery_user=self)
         return queried_deliveries.count()
 
     def __str__(self):
