@@ -69,6 +69,8 @@ def user_view(request, user_id):
     city = single_profile.city
     description = single_profile.description
     email_notifications = single_profile.email_notifications
+    get_average_rating = single_profile.get_average_rating
+    get_rating_count = single_profile.get_rating_count
     if(first_name == ""):
         first_name = username
     if(description == ""):
@@ -81,7 +83,9 @@ def user_view(request, user_id):
         'company': company,
         'city': city,
         'description': description,
-        'email_notifications': email_notifications
+        'email_notifications': email_notifications,
+        'get_average_rating': get_average_rating,
+        'get_rating_count': get_rating_count,
     }
 
     # Render the HTML template index.html with the data in the context variable
@@ -102,8 +106,6 @@ def update_profile(request):
             messages.success(
                 request, 'Your account has been updated.')
             return redirect('user_view', user.username)
-        else:
-            print("form is not valid man")
     else:
         messages.error(
             request, 'Your account has not been created and is awaiting verification.')

@@ -41,12 +41,21 @@ class TaskOfferResponseForm(forms.ModelForm):
         model = TaskOffer
         fields = ('status', 'feedback')
 
+class TaskDeliveryRatingForm(forms.ModelForm):
+    rating = forms.IntegerField(label="Rate entrepreneur between 1 and 5", max_value=5, min_value=1)
+
+    class Meta:
+        model = Delivery
+        fields = ('rating',)
+
+
 class TaskDeliveryResponseForm(forms.ModelForm):
     feedback = forms.Textarea()
 
     class Meta:
         model = Delivery
         fields = ('status', 'feedback')
+
 
 
 PERMISSION_CHOICES = (
