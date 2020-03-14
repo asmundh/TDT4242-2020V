@@ -11,7 +11,7 @@
   <div id="summary">
     <div id="rating">
       <div id="rating-icon"></div>
-      4.7
+      {{get_average_rating}}
     </div>
     <div id="rating-text">
       RATING
@@ -22,13 +22,14 @@
         src="{% static 'img/handshake.png' %}"
         alt="Logo image"
       />
-      12 REVIEWS
+      {{get_rating_count}} REVIEWS
     </div>
   </div>
   <!-- should probably have a safer way of verifying home profile -->
   {% if user.is_authenticated and user.username == username%}
   <div id="description">
     <h2>Description</h2>
+
 
    <form action="{% url 'edit_description'   %}" method="post">
     {% csrf_token %}

@@ -1,11 +1,12 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from user.models import Profile
 from .models import Project, Task, TaskFile, TaskOffer, Delivery, ProjectCategory, Team, TaskFileTeam, directory_path
-from .forms import ProjectForm, TaskFileForm, ProjectStatusForm, TaskOfferForm, TaskOfferResponseForm, TaskPermissionForm, DeliveryForm, TaskDeliveryResponseForm, TeamForm, TeamAddForm
+from .forms import ProjectForm, TaskFileForm, TaskDeliveryRatingForm, ProjectStatusForm, TaskOfferForm, TaskOfferResponseForm, TaskPermissionForm, DeliveryForm, TaskDeliveryResponseForm, TeamForm, TeamAddForm, TaskDeliveryRatingForm
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
+
 from django.contrib.sites.shortcuts import get_current_site
 from django.core import mail
 
@@ -127,8 +128,10 @@ def project_view(request, project_id):
         if request.method == 'POST' and 'offer_response' in request.POST:
             instance = get_object_or_404(
                 TaskOffer, id=request.POST.get('taskofferid'))
+            task = instance.task
             offer_response_form = TaskOfferResponseForm(
                 request.POST, instance=instance)
+
             if offer_response_form.is_valid():
                 offer_response = offer_response_form.save(commit=False)
 
@@ -136,9 +139,13 @@ def project_view(request, project_id):
                     offer_response.task.read.add(offer_response.offerer)
                     offer_response.task.write.add(offer_response.offerer)
                     project = offer_response.task.project
+                    print("this guy should be added to the project!")
+                    print(offer_response.offerer)
                     project.participants.add(offer_response.offerer)
+                    project.save()
 
                 offer_response.save()
+
         offer_response_form = TaskOfferResponseForm()
 
         if request.method == 'POST' and 'status_change' in request.POST:
@@ -168,7 +175,6 @@ def project_view(request, project_id):
                 task_offer.save()
                 owner = project.user.user
                 if owner.profile.email_notifications:
-                    print("email_notifications turned on!")
                     sender = task_offer.offerer
                     project_name = project.title
                     current_site = get_current_site(request)
@@ -176,9 +182,6 @@ def project_view(request, project_id):
                     dummy_mail = "agreelance.emailsender@gmail.com"
                     try:
                         with mail.get_connection() as connection:
-                            print(
-                                f"owner: {owner}, \n sender: {sender.user.first_name}, \n current site: {current_site}, \n connection: {connection}")
-
                             mail.EmailMessage(
                                 "Your Project: " + project_name +
                                 "has a new offer on task: " + task_title + "!",  # title
@@ -194,8 +197,6 @@ def project_view(request, project_id):
                     except Exception as e:
                         messages.success(
                             request, 'Sending of email to ' + owner.email + " failed: " + str(e))
-                else:
-                    print("email notifications turned off")
         task_offer_form = TaskOfferForm()
 
         return render(request, 'projects/project_view.html', {
@@ -230,7 +231,6 @@ def upload_file_to_task(request, project_id, task_id):
                 for team in request.user.profile.teams.all():
                     file_modify_access = TaskFileTeam.objects.filter(
                         team=team, file=existing_file, modify=True).exists()
-                    print(file_modify_access)
                     access = access or file_modify_access
                 access = access or user_permissions['modify']
                 if (access):
@@ -248,7 +248,6 @@ def upload_file_to_task(request, project_id, task_id):
                             tft.read = True
                             tft.save()
                 else:
-                    from django.contrib import messages
                     messages.warning(
                         request, "You do not have access to modify this file")
 
@@ -329,6 +328,8 @@ def task_view(request, project_id, task_id):
                 delivery.task = task
                 delivery.delivery_user = user.profile
                 delivery.save()
+                print(delivery)
+
                 task.status = "pa"
                 task.save()
 
@@ -336,6 +337,8 @@ def task_view(request, project_id, task_id):
         instance = get_object_or_404(
             Delivery, id=request.POST.get('delivery-id'))
         deliver_response_form = TaskDeliveryResponseForm(
+            request.POST, instance=instance)
+        delivery_rating_form = TaskDeliveryRatingForm(
             request.POST, instance=instance)
         if deliver_response_form.is_valid():
             delivery = deliver_response_form.save()
@@ -350,6 +353,16 @@ def task_view(request, project_id, task_id):
             elif delivery.status == 'd':
                 task.status = "dd"
                 task.save()
+            if delivery_rating_form.is_valid():
+                rating_response = delivery_rating_form.save(commit=False)
+                print(rating_response)
+                ratingReceived = delivery_rating_form.cleaned_data['rating']
+                print(ratingReceived)
+                rating_response.delivery_rating = ratingReceived
+                print(rating_response)
+                rating_response.save()
+
+        delivery_rating_form = TaskDeliveryRatingForm()
 
     if request.method == 'POST' and 'team' in request.POST:
         if accepted_task_offer and accepted_task_offer.offerer == user.profile:
@@ -396,6 +409,7 @@ def task_view(request, project_id, task_id):
 
     deliver_form = DeliveryForm()
     deliver_response_form = TaskDeliveryResponseForm()
+    delivery_rating_form = TaskDeliveryRatingForm()
     team_form = TeamForm()
     team_add_form = TeamAddForm()
 
@@ -420,7 +434,8 @@ def task_view(request, project_id, task_id):
             'team_form': team_form,
             'team_add_form': team_add_form,
             'team_files': team_files,
-            'per': per
+            'per': per,
+            'delivery_rating_form': delivery_rating_form
         })
 
     return redirect('/user/login')

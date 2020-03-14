@@ -4,6 +4,7 @@
 {% load static %}
 {% load project_extras %}
 
+
 {% block title %}Task{% endblock %}
 
 {% block content %}
@@ -271,7 +272,7 @@
           <h3>Feedback: </h3>
           {{delivery.feedback}}
         </div>
-          <h4>  Status: {{delivery.get_status_display}}</h4>
+          <h4>  Status: {{delivery.get_status_display}}</h4>  
             {% if user_permissions.owner and delivery.status == 'p' %}
             <div>
               <div>
@@ -291,6 +292,8 @@
                         {{delivery.comment}}
                         {% csrf_token %}
                         {% bootstrap_form deliver_response_form %}
+                        {% bootstrap_form delivery_rating_form %}
+
                         <input type="hidden" name="delivery-id" value="{{delivery.id}}"/>
                       </div>
                       <div class="modal-footer">
