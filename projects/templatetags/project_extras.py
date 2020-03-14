@@ -90,5 +90,5 @@ def get_project_participants(project):
     participants = set()
     for participant in query:
         participants.add(participant.user.username)
-
+    
     return participants

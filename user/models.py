@@ -28,14 +28,14 @@ class Profile(models.Model):
         if (queried_deliveries.count() > 0):
             for delivery in queried_deliveries:
                 sum_of_ratings += delivery.delivery_rating
-            # print(queried_deliveries.count())
-            return sum_of_ratings/queried_deliveries.count()
+            return round(sum_of_ratings/queried_deliveries.count(), 1)
         else:
             return 0
 
     def get_rating_count(self):
         queried_deliveries = apps.get_model(
             'projects.delivery').objects.filter(delivery_user=self)
+        print(queried_deliveries)
         return queried_deliveries.count()
 
     def __str__(self):

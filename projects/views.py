@@ -129,15 +129,8 @@ def project_view(request, project_id):
             instance = get_object_or_404(
                 TaskOffer, id=request.POST.get('taskofferid'))
             task = instance.task
-            print(task)
-            # deliveryInstance = Delivery.objects.filter(
-            #     task=task)
-            # print(deliveryInstance)
-            # print(deliveryInstance.get("task"))
             offer_response_form = TaskOfferResponseForm(
                 request.POST, instance=instance)
-            # delivery_rating_form = TaskDeliveryRatingForm(
-            #     request.POST, instance=deliveryInstance.first())
 
             if offer_response_form.is_valid():
                 offer_response = offer_response_form.save(commit=False)
@@ -152,17 +145,8 @@ def project_view(request, project_id):
                     project.save()
 
                 offer_response.save()
-            # if delivery_rating_form.is_valid():
-            #     rating_response = delivery_rating_form.save(commit=False)
-            #     print(rating_response)
-            #     ratingReceived = delivery_rating_form.cleaned_data['rating']
-            #     print(ratingReceived)
-            #     rating_response.delivery_rating = ratingReceived
-            #     print(rating_response)
-            #     rating_response.save()
 
         offer_response_form = TaskOfferResponseForm()
-        #delivery_rating_form = TaskDeliveryRatingForm()
 
         if request.method == 'POST' and 'status_change' in request.POST:
             status_form = ProjectStatusForm(request.POST)
@@ -178,7 +162,6 @@ def project_view(request, project_id):
             'status_form': status_form,
             'total_budget': total_budget,
             'offer_response_form': offer_response_form,
-            # 'delivery_rating_form': delivery_rating_form,
         })
 
     else:
