@@ -14,7 +14,7 @@ def home(request):
                 request, 'Your account has no description!')
         user_projects = Project.objects.filter(user=user.profile)
         customer_projects = list(Project.objects.filter(
-            participants__id=user.id).order_by().distinct())
+            participants=user.profile).order_by().distinct())
         for team in user.profile.teams.all():
             customer_projects.append(team.task.project)
         cd = {}

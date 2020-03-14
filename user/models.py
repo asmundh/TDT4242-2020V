@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.apps import apps
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -18,6 +19,24 @@ class Profile(models.Model):
         'projects.ProjectCategory', related_name='competance_categories')
     description = models.TextField(max_length=2000, blank=True)
     email_notifications = models.BooleanField(default=True)
+
+    @property
+    def get_average_rating(self):
+        queried_deliveries = apps.get_model(
+            'projects.delivery').objects.filter(delivery_user=self)
+        sum_of_ratings = 0
+        if (queried_deliveries.count() > 0):
+            for delivery in queried_deliveries:
+                sum_of_ratings += delivery.delivery_rating
+            return round(sum_of_ratings/queried_deliveries.count(), 1)
+        else:
+            return 0
+
+    def get_rating_count(self):
+        queried_deliveries = apps.get_model(
+            'projects.delivery').objects.filter(delivery_user=self)
+        print(queried_deliveries)
+        return queried_deliveries.count()
 
     def __str__(self):
         return self.user.username
