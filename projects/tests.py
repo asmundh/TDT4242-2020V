@@ -425,38 +425,49 @@ class ProjectViewTestSuite(TestCase):
             project=self.test_project,
             title='This task is purely for testing. I will not pay',
             description='^Same as above',
-            budget=150000000
+            budget=20
         )
 
-        self.task_1_offer = TaskOffer.objects.create(
+        # self.task_1_offer = TaskOffer.objects.create(
+        #     pk=1,
+        #     task=self.task_1,
+        #     title='This offer is purely for testing. I will not actually complete the task',
+        #     description='Same as above',
+        #     price=20,
+        #     offerer=self.user_bidder.profile
+        # )
+
+    def test_project_view_offer_response(self):
+        print("TEST")
+        taskOffer = TaskOffer.objects.create(
             pk=1,
             task=self.task_1,
             title='This offer is purely for testing. I will not actually complete the task',
             description='Same as above',
-            price=150000000,
+            price=20,
             offerer=self.user_bidder.profile
         )
+        task_offer_id = taskOffer.id
 
-    def test_project_view(self):
-        request = self.factory.get('/project/'+str(self.user_owner.id))
+        self.client.login(username='Project_owner', password='HemmeligWooo213')
+        response = self.client.post(f'/projects/{task_offer_id}/',
+            {
+                'status': 'a',
+                'offer_response': True,
+                'taskofferid': task_offer_id,
+                'feedback': 'Bra saker'
+            }
+        )
+        self.assertEqual(200, response.status_code)
+
+    def test_project_view_status_change(self):
+        request = self.factory.get('/projects/'+str(self.user_owner.id))
         request.user = self.user_owner
         response = project_view(request, self.test_project.id)
         self.assertEqual(200, response.status_code)
 
         post = self.factory.post(
-            '/project'+str(self.user_owner.id),
-            {
-                'offer_response': '',
-                'status': 'a'
-            }
-        )
-
-        post.user = self.user_bidder
-        response = project_view(post, self.test_project.id)
-        self.assertEqual(200, response.status_code)
-
-        post = self.factory.post(
-            '/project/'+str(self.user_owner.id),
+            '/projects/'+str(self.user_owner.id),
             {
                 'status_change': '',
                 'status': 'i'
@@ -466,30 +477,17 @@ class ProjectViewTestSuite(TestCase):
         response = project_view(post, self.test_project.id)
         self.assertEqual(response.status_code, 200)
 
+    def test_project_view_offer_submit(self):
         post = self.factory.post(
             '/project/'+str(self.user_bidder.id),
             {
-                'offer_submit': '',
+                'offer_submit': True,
                 'title': 'This is purely a test offer. I have not actually done anything.',
                 'description': 'Same as above.',
-                'price': 1500000,
+                'price': 20,
                 'taskvalue': self.task_1.id
             }
         )
-        post.user = self.user_bidder
-        response = project_view(post, self.test_project.id)
-        self.assertEqual(200, response.status_code)
-
-        post = self.factory.post(
-            '/project'+str(self.user_owner.id),
-            {
-                'taskofferid': self.task_1_offer.id,
-                'offer_response': '',
-                'feedback': 'This is purely test feedback, I do not actually accept',
-                'status': 'a'
-            }
-        )
-
         post.user = self.user_bidder
         response = project_view(post, self.test_project.id)
         self.assertEqual(200, response.status_code)
