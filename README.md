@@ -43,12 +43,13 @@ existing web application and to ensure the quality of the new features you add.
 <h3>2.2 Blackbox testing approach</h3> 
 <h3>2.3 Django testing approach</h3> 
 <h3>2.4 CI/CD configuration</h3> 
-Through the use of Gitlab CI/CD each time changes are pushed to a branch on gitlab, it will be run through predefined pipelines. Here, tests are run and potential configuration and compilation errors are discovered. Additionally, we have configured Heroku to automatically rebuild and redeploy when new changes are pushed to the master branch. This ensures that the live website is as up-to-date with the master branch as possible. 
+Through the use of Gitlab CI/CD each time changes are pushed to a branch on gitlab, it will be run through predefined pipelines. Here, tests are run and potential configuration and compilation errors are discovered. Additionally, we have configured Heroku to automatically rebuild and redeploy when new changes are pushed to the master branch. This ensures that the live website is as up-to-date with the master branch as we want it to be. 
 
 In our Gitlab CI/CD configurations, we add the details of our Heroku application, and to our '''.gitlab-ci.yml''' file we add a script to deploy to Heroku. Once deployed to Heroku, Heroku's own CI/CD allows us to roll back to previous builds if wanted, and it will not deploy the new changes if it fails to build.
 
-When implementing our new features, the Gitlab CI/CD pipeline ensured that no breaking changes could be made. If the tests we had already written for the system did not pass, it would mean that our new code had broken the application, and refactoring would be necessary.  
+We have not made an extensive pipeline for continous integration, but if desired it could be stricter, such as enforcing certain coding standards via linting. However, it does not allow any breaking code to enter our live application, which we deemde the most important. If the tests we had already written for the system did not pass, it would mean that our new code had broken the application, and refactoring would be necessary.  
 
+When making new features to the application, it was especially important that these did not break any other parts of the system. Through the use of continous integration, this could more easily be ensured.
 
 
 <h3>2.5 Design standards</h3> 
