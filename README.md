@@ -106,6 +106,8 @@ Blackbox testing holds the advantage of it not being dependent on knowledge of t
 
 These strength can also pose as weaknesses. If the requirements specifications are not properly developed, writing tests for the sytem can prove hard or even impossible. In the real world, requirements specifications are seldom perfect, thus designing and writing the test cases often prove difficult.
 
+For this project the main type of blackbox testing we conducted was acceptance testing with our peer group. They were given access to the application, and set to test the functionality of the application that they had requested we add. We gave our peer group tasks to perform on the live website, and they gave feedback on how well the functionality that we had implemented matched what they had requested.
+
 <h3>2.3 Django testing approach</h3> 
 <h3>2.4 CI/CD configuration</h3> 
 Through the use of Gitlab CI/CD each time changes are pushed to a branch on gitlab, it will be run through predefined pipelines. Here, tests are run and potential configuration and compilation errors are discovered. Additionally, we have configured Heroku to automatically rebuild and redeploy when new changes are pushed to the master branch. This ensures that the live website is as up-to-date with the master branch as we want it to be. 
