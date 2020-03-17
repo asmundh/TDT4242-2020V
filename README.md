@@ -109,6 +109,10 @@ Font style:  `"Roboto","Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verda
 
 <h2>3. Test Driven Development Methodology</h2>
 <h3>3.1 Overview</h3>
+The testing strategy is developed by and for Group 26’s members Odd Gunnar and Åsmund. 
+During the Software Testing Life Cycle the group will exercise numerous testing activities such as pair programming, 
+unit tests and coverage tests. We will stride to do TDD and be proactive in out testing, 
+however if we struggle to understand code and its ramifications we will do a reactive approach. 
 <h3>3.2 Approach</h3>
 
 <h2>4. Implementations</h2>
