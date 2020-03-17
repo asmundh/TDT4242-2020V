@@ -107,6 +107,15 @@ These strength can also pose as weaknesses. If the requirements specifications a
 
 <h3>2.3 Django testing approach</h3> 
 <h3>2.4 CI/CD configuration</h3> 
+Through the use of Gitlab CI/CD each time changes are pushed to a branch on gitlab, it will be run through predefined pipelines. Here, tests are run and potential configuration and compilation errors are discovered. Additionally, we have configured Heroku to automatically rebuild and redeploy when new changes are pushed to the master branch. This ensures that the live website is as up-to-date with the master branch as we want it to be. 
+
+In our Gitlab CI/CD configurations, we add the details of our Heroku application, and to our '''.gitlab-ci.yml''' file we add a script to deploy to Heroku. Once deployed to Heroku, Heroku's own CI/CD allows us to roll back to previous builds if wanted, and it will not deploy the new changes if it fails to build.
+
+We have not made an extensive pipeline for continous integration, but if desired it could be stricter, such as enforcing certain coding standards via linting. However, it does not allow any breaking code to enter our live application, which we deemde the most important. If the tests we had already written for the system did not pass, it would mean that our new code had broken the application, and refactoring would be necessary.  
+
+When making new features to the application, it was especially important that these did not break any other parts of the system. Through the use of continous integration, this could more easily be ensured.
+
+
 <h3>2.5 Design standards</h3> 
 We will stride to keep the existing feel of Agreelance by inspecting the pages 
 and draw inspiration from their layout and style. We will use the design tool 
@@ -146,7 +155,7 @@ User Profile with description
 | Alternative flows | **3.1 Creating a profile description when signing up** <br/> 1. The user prompts to sign up for Agreelance. <br/> 2. The user fills in a description about themself. <br/> 3. The user sends their sign-up information. <br/> The description is stored in the database alongside other information about the user.                     |
 | Exceptions:       | **2.0.E1 Customer does not write a description** <br/> 1.System displays a banner message: “Your profile has no description. Please add one now!”. <br/>2. The user clicks on the banner to start normal flow. <br/> a) The user clicks on the banner to start normal flow. <br/>b) The user clicks “x” to close the banner.            |  |
 | Priority          | Medium                                                                                                                                                                                                                                                                                                                                  |
-| Frequency of Use  | Not necessarily used. Can be used repeatedly if the user wants to update their description.    |
+| Frequency of Use  | Not necessarily used. Can be used repeatedly if the user wants to update their description.                                                                                                                                                                                                                                             |
 
 <h4>5.1.1 Design</h4>
 ![User_page_1](/uploads/5d198d5b221b8e10959d9c0a7b6791a6/User_page_1.png)
