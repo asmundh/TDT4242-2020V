@@ -1,10 +1,15 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from user.models import Profile
 from .models import Project, Task, TaskFile, TaskOffer, Delivery, ProjectCategory, Team, TaskFileTeam, directory_path
-from .forms import ProjectForm, TaskFileForm, ProjectStatusForm, TaskOfferForm, TaskOfferResponseForm, TaskPermissionForm, DeliveryForm, TaskDeliveryResponseForm, TeamForm, TeamAddForm
+from .forms import ProjectForm, TaskFileForm, TaskDeliveryRatingForm, ProjectStatusForm, TaskOfferForm, TaskOfferResponseForm, TaskPermissionForm, DeliveryForm, TaskDeliveryResponseForm, TeamForm, TeamAddForm, TaskDeliveryRatingForm
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib import messages
+
+from django.contrib.sites.shortcuts import get_current_site
+from django.core import mail
+
 
 
 def projects(request):
@@ -22,6 +27,51 @@ def projects(request):
 @login_required
 def new_project(request):
     from django.contrib.sites.shortcuts import get_current_site
+    current_site = get_current_site(request)
+    if request.method == 'POST':
+        form = ProjectForm(request.POST)
+        if form.is_valid():
+            project = form.save(commit=False)
+            project.user = request.user.profile
+            project.category = get_object_or_404(
+                ProjectCategory, id=request.POST.get('category_id'))
+            project.save()
+
+            people = Profile.objects.filter(categories__id=project.category.id)
+            for person in people:
+                if person.user.email:
+                    try:
+                        with mail.get_connection() as connection:
+                            mail.EmailMessage(
+                                "New Project: " + project.title, "A new project you might be interested in was created and can be viwed at " +
+                                current_site.domain + '/projects/' +
+                                str(project.id), "Agreelancer", [
+                                    person.user.email],
+                                connection=connection,
+                            ).send()
+                    except Exception as e:
+                        from django.contrib import messages
+                        messages.success(
+                            request, 'Sending of email to ' + person.user.email + " failed: " + str(e))
+
+            task_title = request.POST.getlist('task_title')
+            task_description = request.POST.getlist('task_description')
+            task_budget = request.POST.getlist('task_budget')
+            for i in range(0, len(task_title)):
+                Task.objects.create(
+                    title=task_title[i],
+                    description=task_description[i],
+                    budget=task_budget[i],
+                    project=project,
+                )
+            return redirect('project_view', project_id=project.id)
+    else:
+        form = ProjectForm()
+    return render(request, 'projects/new_project.html', {'form': form})
+
+
+@login_required
+def send_new_offer_email(request):
     current_site = get_current_site(request)
     if request.method == 'POST':
         form = ProjectForm(request.POST)
@@ -79,8 +129,10 @@ def project_view(request, project_id):
         if request.method == 'POST' and 'offer_response' in request.POST:
             instance = get_object_or_404(
                 TaskOffer, id=request.POST.get('taskofferid'))
+            task = instance.task
             offer_response_form = TaskOfferResponseForm(
                 request.POST, instance=instance)
+
             if offer_response_form.is_valid():
                 offer_response = offer_response_form.save(commit=False)
 
@@ -88,9 +140,13 @@ def project_view(request, project_id):
                     offer_response.task.read.add(offer_response.offerer)
                     offer_response.task.write.add(offer_response.offerer)
                     project = offer_response.task.project
+                    print("this guy should be added to the project!")
+                    print(offer_response.offerer)
                     project.participants.add(offer_response.offerer)
+                    project.save()
 
                 offer_response.save()
+
         offer_response_form = TaskOfferResponseForm()
 
         if request.method == 'POST' and 'status_change' in request.POST:
@@ -118,6 +174,30 @@ def project_view(request, project_id):
                     pk=request.POST.get('taskvalue'))
                 task_offer.offerer = request.user.profile
                 task_offer.save()
+                owner = project.user.user
+                if owner.profile.email_notifications:
+                    sender = task_offer.offerer
+                    project_name = project.title
+                    current_site = get_current_site(request)
+                    task_title = task_offer.task.title
+                    dummy_mail = "agreelance.emailsender@gmail.com"
+                    try:
+                        with mail.get_connection() as connection:
+                            mail.EmailMessage(
+                                "Your Project: " + project_name +
+                                "has a new offer on task: " + task_title + "!",  # title
+                                f'''The entrepeneur  {sender.user.first_name} {sender.user.last_name} has given you an offer on task {task_title} related to project {project_name}. \n You should let him or her know if you accept the offer! \n \nFind your project at {current_site.domain}/projects/{str(project.id)}
+                                ''',  # content
+                                dummy_mail,  # sender
+                                [dummy_mail, owner.email],  # reciever
+                                connection=connection,
+                            ).send()
+                            messages.success(
+                                request, 'Sending of email to ' + owner.email)
+
+                    except Exception as e:
+                        messages.success(
+                            request, 'Sending of email to ' + owner.email + " failed: " + str(e))
         task_offer_form = TaskOfferForm()
 
         return render(request, 'projects/project_view.html', {
@@ -152,7 +232,6 @@ def upload_file_to_task(request, project_id, task_id):
                 for team in request.user.profile.teams.all():
                     file_modify_access = TaskFileTeam.objects.filter(
                         team=team, file=existing_file, modify=True).exists()
-                    print(file_modify_access)
                     access = access or file_modify_access
                 access = access or user_permissions['modify']
                 if (access):
@@ -170,7 +249,6 @@ def upload_file_to_task(request, project_id, task_id):
                             tft.read = True
                             tft.save()
                 else:
-                    from django.contrib import messages
                     messages.warning(
                         request, "You do not have access to modify this file")
 
@@ -251,6 +329,8 @@ def task_view(request, project_id, task_id):
                 delivery.task = task
                 delivery.delivery_user = user.profile
                 delivery.save()
+                print(delivery)
+
                 task.status = "pa"
                 task.save()
 
@@ -272,6 +352,16 @@ def task_view(request, project_id, task_id):
             elif delivery.status == 'd':
                 task.status = "dd"
                 task.save()
+            if delivery_rating_form.is_valid():
+                rating_response = delivery_rating_form.save(commit=False)
+                print(rating_response)
+                ratingReceived = delivery_rating_form.cleaned_data['rating']
+                print(ratingReceived)
+                rating_response.delivery_rating = ratingReceived
+                print(rating_response)
+                rating_response.save()
+
+        delivery_rating_form = TaskDeliveryRatingForm()
 
     if request.method == 'POST' and 'team' in request.POST:
         if accepted_task_offer and accepted_task_offer.offerer == user.profile:
@@ -318,6 +408,7 @@ def task_view(request, project_id, task_id):
 
     deliver_form = DeliveryForm()
     deliver_response_form = TaskDeliveryResponseForm()
+    delivery_rating_form = TaskDeliveryRatingForm()
     team_form = TeamForm()
     team_add_form = TeamAddForm()
 
@@ -342,7 +433,8 @@ def task_view(request, project_id, task_id):
             'team_form': team_form,
             'team_add_form': team_add_form,
             'team_files': team_files,
-            'per': per
+            'per': per,
+            'delivery_rating_form': delivery_rating_form
         })
 
     return redirect('/user/login')

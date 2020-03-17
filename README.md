@@ -40,9 +40,85 @@ existing web application and to ensure the quality of the new features you add.
 
 <h2>2. Standards</h2>  
 <h3>2.1 Whitebox testing approach</h3> 
+White box testing is a testing approach of a softwares internal coding and 
+infrastructure. Its focuses primarily on strengthening security, verifying the 
+flow of inputs and outputs through the application and improving the design and 
+usability. White box testing involves the testing of the software code for the following : 
+
+*  Broken or poorly structured paths in the coding processes
+*  The flow of specific inputs through the code 
+*  The internal security holes
+*  Testing each statement, object and function on an individual basis (unit tests)
+*  Testing for expected outputs (black box test)
+*  The functionality of conditional loops 
+
+The testing can be done at a system, integration and unit level of software 
+development. One of the basic goals of white box testing is to verify that the 
+application has a working flow. It involves a series of predefined inputs against 
+expected or desired outputs so that when a specific input does not result in the
+expected output, you have encountered a bug. 
+
+White box testing can be broken down into two steps:
+<h4>1. Understanding the Source Code</h4>
+The perform a white box test the tester needs to first understand the logic and 
+goal of the source code. Since the white box testing revolves around testing the 
+internal workings of the application the tester needs to know the programming language 
+and be highly aware of the secure coding practices of that language. The tester should 
+also be aware of potential security issues and prevent attacks from hackers and naive 
+user who might inject malicious code into the application either knowingly or unknowingly.
+
+<h4>2. Testing Proper Flow and Structure</h4>
+The simplest way of doing this is to write tests for expected outputs. The tester would 
+develop small tests for each process or series of processes in the application. This 
+again requires the tester to have a good knowledge about the programming language and 
+its coding practices. Other methods include manual testing, trial and error testing and 
+the use of testing tools.
+
+<h4>White Box Testing Techniques</h4>
+The major part of white box testing is Code Coverage analysis. Code Coverage analysis 
+eliminates gaps in a Test Case Suite. This can be done with the python package 
+Coverage which shows the percentage of code covered with tests and identifies the 
+areas of the program that are not exercised by a set of test cases.  Once these gaps 
+are identified, one can create test cases for the untested parts of the code, thereby 
+increasing the quality of the software product. 
+
+In coverage testing one normally looks at statement coverage and branch coverage. 
+Statement coverage considers every possible statement in the code to be tested at least 
+once during the testing process. Branch coverage considers the check of every possible 
+path ( if-else mostly).  By using Branch and Statement coverage one generally attains 
+80-90% code coverage which is sufficient in most cases.
+
+<h4>White Box Testing Tools</h4>
+Below is a list of the tools we can use in our project:
+
+*  Coverage
+*  PyUnit
+*  Django TestSuite
+
+
 <h3>2.2 Blackbox testing approach</h3> 
+In short terms, blackbox testing is the act of testing the functionality of a system. For instance, we could test that for a given input, the component being tested will reyturn the correct output. This means that we do not worry about the internal processes or structure of the component. Blackbox testing also includes non-functional testing, such as performance or usability. 
+
+
+When we are testing functionality through blackbox testing we are interested in finding errors in the system, for example missing or incorrect functions or initialization and terminator errors. With tests in place, discovering new errors as a  result of changes to the code can be made easier. If a previously passing test now fails, this could indicate unwanted errors in the code.
+
+Blackbox testing holds the advantage of it not being dependent on knowledge of the internal structure and composition of the system. This means that the tests can be made once the requirement specifications of the system have been defined. Furthermore, the tests can be created by a third party not involved in the development of the system.  
+
+These strength can also pose as weaknesses. If the requirements specifications are not properly developed, writing tests for the sytem can prove hard or even impossible. In the real world, requirements specifications are seldom perfect, thus designing and writing the test cases often prove difficult.
+
+For this project the main type of blackbox testing we conducted was acceptance testing with our peer group. They were given access to the application, and set to test the functionality of the application that they had requested we add. We gave our peer group tasks to perform on the live website, and they gave feedback on how well the functionality that we had implemented matched what they had requested.
+
 <h3>2.3 Django testing approach</h3> 
 <h3>2.4 CI/CD configuration</h3> 
+Through the use of Gitlab CI/CD each time changes are pushed to a branch on gitlab, it will be run through predefined pipelines. Here, tests are run and potential configuration and compilation errors are discovered. Additionally, we have configured Heroku to automatically rebuild and redeploy when new changes are pushed to the master branch. This ensures that the live website is as up-to-date with the master branch as we want it to be. 
+
+In our Gitlab CI/CD configurations, we add the details of our Heroku application, and to our '''.gitlab-ci.yml''' file we add a script to deploy to Heroku. Once deployed to Heroku, Heroku's own CI/CD allows us to roll back to previous builds if wanted, and it will not deploy the new changes if it fails to build.
+
+We have not made an extensive pipeline for continous integration, but if desired it could be stricter, such as enforcing certain coding standards via linting. However, it does not allow any breaking code to enter our live application, which we deemde the most important. If the tests we had already written for the system did not pass, it would mean that our new code had broken the application, and refactoring would be necessary.  
+
+When making new features to the application, it was especially important that these did not break any other parts of the system. Through the use of continous integration, this could more easily be ensured.
+
+
 <h3>2.5 Design standards</h3> 
 We will stride to keep the existing feel of Agreelance by inspecting the pages 
 and draw inspiration from their layout and style. We will use the design tool 
@@ -53,6 +129,10 @@ Font style:  `"Roboto","Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verda
 
 <h2>3. Test Driven Development Methodology</h2>
 <h3>3.1 Overview</h3>
+The testing strategy is developed by and for Group 26’s members Odd Gunnar and Åsmund. 
+During the Software Testing Life Cycle the group will exercise numerous testing activities such as pair programming, 
+unit tests and coverage tests. We will stride to do TDD and be proactive in out testing, 
+however if we struggle to understand code and its ramifications we will do a reactive approach. 
 <h3>3.2 Approach</h3>
 
 <h2>4. Implementations</h2>
@@ -78,7 +158,7 @@ User Profile with description
 | Alternative flows | **3.1 Creating a profile description when signing up** <br/> 1. The user prompts to sign up for Agreelance. <br/> 2. The user fills in a description about themself. <br/> 3. The user sends their sign-up information. <br/> The description is stored in the database alongside other information about the user.                     |
 | Exceptions:       | **2.0.E1 Customer does not write a description** <br/> 1.System displays a banner message: “Your profile has no description. Please add one now!”. <br/>2. The user clicks on the banner to start normal flow. <br/> a) The user clicks on the banner to start normal flow. <br/>b) The user clicks “x” to close the banner.            |  |
 | Priority          | Medium                                                                                                                                                                                                                                                                                                                                  |
-| Frequency of Use  | Not necessarily used. Can be used repeatedly if the user wants to update their description.    |
+| Frequency of Use  | Not necessarily used. Can be used repeatedly if the user wants to update their description.                                                                                                                                                                                                                                             |
 
 <h4>5.1.1 Design</h4>
 ![User_page_1](/uploads/5d198d5b221b8e10959d9c0a7b6791a6/User_page_1.png)
