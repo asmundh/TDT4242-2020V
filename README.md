@@ -43,6 +43,7 @@ existing web application and to ensure the quality of the new features you add.
 <h3>2.2 Blackbox testing approach</h3> 
 In short terms, blackbox testing is the act of testing the functionality of a system. For instance, we could test that for a given input, the component being tested will reyturn the correct output. This means that we do not worry about the internal processes or structure of the component. Blackbox testing also includes non-functional testing, such as performance or usability. 
 
+
 When we are testing functionality through blackbox testing we are interested in finding errors in the system, for example missing or incorrect functions or initialization and terminator errors. With tests in place, discovering new errors as a  result of changes to the code can be made easier. If a previously passing test now fails, this could indicate unwanted errors in the code.
 
 Blackbox testing holds the advantage of it not being dependent on knowledge of the internal structure and composition of the system. This means that the tests can be made once the requirement specifications of the system have been defined. Furthermore, the tests can be created by a third party not involved in the development of the system.  
