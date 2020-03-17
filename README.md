@@ -40,6 +40,62 @@ existing web application and to ensure the quality of the new features you add.
 
 <h2>2. Standards</h2>  
 <h3>2.1 Whitebox testing approach</h3> 
+White box testing is a testing approach of a softwares internal coding and 
+infrastructure. Its focuses primarily on strengthening security, verifying the 
+flow of inputs and outputs through the application and improving the design and 
+usability. White box testing involves the testing of the software code for the following : 
+
+*  Broken or poorly structured paths in the coding processes
+*  The flow of specific inputs through the code 
+*  The internal security holes
+*  Testing each statement, object and function on an individual basis (unit tests)
+*  Testing for expected outputs (black box test)
+*  The functionality of conditional loops 
+
+The testing can be done at a system, integration and unit level of software 
+development. One of the basic goals of white box testing is to verify that the 
+application has a working flow. It involves a series of predefined inputs against 
+expected or desired outputs so that when a specific input does not result in the
+expected output, you have encountered a bug. 
+
+White box testing can be broken down into two steps:
+<h4>1. Understanding the Source Code</h4>
+The perform a white box test the tester needs to first understand the logic and 
+goal of the source code. Since the white box testing revolves around testing the 
+internal workings of the application the tester needs to know the programming language 
+and be highly aware of the secure coding practices of that language. The tester should 
+also be aware of potential security issues and prevent attacks from hackers and naive 
+user who might inject malicious code into the application either knowingly or unknowingly.
+
+<h4>2. Testing Proper Flow and Structure</h4>
+The simplest way of doing this is to write tests for expected outputs. The tester would 
+develop small tests for each process or series of processes in the application. This 
+again requires the tester to have a good knowledge about the programming language and 
+its coding practices. Other methods include manual testing, trial and error testing and 
+the use of testing tools.
+
+<h4>White Box Testing Techniques</h4>
+The major part of white box testing is Code Coverage analysis. Code Coverage analysis 
+eliminates gaps in a Test Case Suite. This can be done with the python package 
+Coverage which shows the percentage of code covered with tests and identifies the 
+areas of the program that are not exercised by a set of test cases.  Once these gaps 
+are identified, one can create test cases for the untested parts of the code, thereby 
+increasing the quality of the software product. 
+
+In coverage testing one normally looks at statement coverage and branch coverage. 
+Statement coverage considers every possible statement in the code to be tested at least 
+once during the testing process. Branch coverage considers the check of every possible 
+path ( if-else mostly).  By using Branch and Statement coverage one generally attains 
+80-90% code coverage which is sufficient in most cases.
+
+<h4>White Box Testing Tools</h4>
+Below is a list of the tools we can use in our project:
+
+*  Coverage
+*  PyUnit
+*  Django TestSuite
+
+
 <h3>2.2 Blackbox testing approach</h3> 
 <h3>2.3 Django testing approach</h3> 
 <h3>2.4 CI/CD configuration</h3> 
