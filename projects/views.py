@@ -11,6 +11,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core import mail
 
 
+
 def projects(request):
     projects = Project.objects.all()
     project_categories = ProjectCategory.objects.all()
@@ -124,7 +125,7 @@ def project_view(request, project_id):
         total_budget += item.budget
 
     if request.user == project.user.user:
-
+        print(f"{request.method}, {request.POST}")
         if request.method == 'POST' and 'offer_response' in request.POST:
             instance = get_object_or_404(
                 TaskOffer, id=request.POST.get('taskofferid'))
@@ -337,8 +338,6 @@ def task_view(request, project_id, task_id):
         instance = get_object_or_404(
             Delivery, id=request.POST.get('delivery-id'))
         deliver_response_form = TaskDeliveryResponseForm(
-            request.POST, instance=instance)
-        delivery_rating_form = TaskDeliveryRatingForm(
             request.POST, instance=instance)
         if deliver_response_form.is_valid():
             delivery = deliver_response_form.save()
