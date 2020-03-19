@@ -327,66 +327,6 @@ class ProjectViewTests(TestCase):
             reverse('task_view', kwargs={'task_id': task_id, 'project_id': project_id}))
         self.assertEqual(response.status_code, 200)
 
-
-class ProjectViewTests(TestCase):
-
-    def setUp(self):
-        self.owner_user = User.objects.create_user(
-            username='john5',
-            first_name='john5',
-            last_name='johnson5',
-            email='jlennon5@beatles.com',
-        )
-        self.owner_user.save()
-        self.category = ProjectCategory.objects.create(name="Painting")
-        self.category.save()
-        self.owner_project = Project.objects.create(
-            user=self.owner_user.profile,
-            title='Test project',
-            description='Description',
-            category=self.category
-        )
-        self.owner_project.save()
-        self.project_manager = User.objects.create_user(
-            username='john3',
-            first_name='john3',
-            last_name='johnson3',
-            email='jlennon3@beatles.com'
-        )
-        self.project_manager.save()
-        self.owner_task = Task.objects.create(
-            project=self.owner_project,
-            title='Task name',
-            description='Task description'
-        )
-        self.offer = TaskOffer.objects.create(
-            task=self.owner_task,
-            offerer=self.project_manager.profile,
-            title="Offer title",
-            price=1,
-            description="Offer description",
-            status=TaskOffer.ACCEPTED
-        )
-        self.offer.save()
-
-        self.owner_task.save()
-
-    def test_project_view_not_logged_in(self):
-        task_id = self.owner_task.id
-        project_id = self.owner_task.project_id
-        response = self.client.get(
-            reverse('project_view', kwargs={'project_id': project_id}))
-        self.assertEqual(response.status_code, 200)
-
-    def test_project_view_logged_in(self):
-        self.client.force_login(user=self.owner_user)
-        task_id = self.owner_task.id
-        project_id = self.owner_task.project_id
-        response = self.client.get(
-            reverse('project_view', kwargs={'project_id': project_id}))
-        self.assertEqual(response.status_code, 200)
-
-
 class ProjectViewTestSuite(TestCase):
 
     def setUp(self):
@@ -483,7 +423,7 @@ class ProjectViewTestSuite(TestCase):
             {
                 'offer_submit': True,
                 'title': 'This is purely a test offer. I have not actually done anything.',
-                'description': 'Same as above.',
+                # 'description': 'Same as above.',
                 'price': 20,
                 'taskvalue': self.task_1.id
             }
