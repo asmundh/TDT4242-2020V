@@ -5,6 +5,7 @@ from projects.views import project_view, get_user_task_permissions
 from .models import Project, Task, TaskFile, TaskOffer, Delivery, ProjectCategory, Team, TaskFileTeam, directory_path
 from user.models import User, Profile
 from django.urls import reverse
+from .templatetags.project_extras import get_accepted_task_offer, check_taskoffers, get_project_participants, get_project_participants_string
 
 
 class GetUserTaskPermissionsTest(TestCase):
@@ -269,63 +270,6 @@ class GetUserTaskPermissionsTest(TestCase):
         self.assertIs(task_permissions['view_task'], True)
 
 
-class ProjectViewTests(TestCase):
-
-    def setUp(self):
-        self.owner_user = User.objects.create_user(
-            username='elizabeth',
-            first_name='Elizabeth',
-            last_name='Bennet',
-            email='eliben@pride.com',
-        )
-        self.owner_user.save()
-        self.category = ProjectCategory.objects.create(name="Painting")
-        self.category.save()
-        self.owner_project = Project.objects.create(
-            user=self.owner_user.profile,
-            title='Test project',
-            description='Description',
-            category=self.category
-        )
-        self.owner_project.save()
-        self.project_manager = User.objects.create_user(
-            username='sherlock',
-            first_name='Sherlock',
-            last_name='Holmes',
-            email='shehol@mystery.com'
-        )
-        self.project_manager.save()
-        self.owner_task = Task.objects.create(
-            project=self.owner_project,
-            title='Task name',
-            description='Task description'
-        )
-        self.offer = TaskOffer.objects.create(
-            task=self.owner_task,
-            offerer=self.project_manager.profile,
-            title="Offer title",
-            price=1,
-            description="Offer description",
-            status=TaskOffer.ACCEPTED
-        )
-        self.offer.save()
-
-        self.owner_task.save()
-
-    def test_project_view_not_logged_in(self):
-        task_id = self.owner_task.id
-        project_id = self.owner_task.project_id
-        response = self.client.get(
-            reverse('task_view', kwargs={'task_id': task_id, 'project_id': project_id}))
-        self.assertEqual(response.status_code, 302)
-
-    def test_task_view_logged_in(self):
-        self.client.force_login(user=self.owner_user)
-        task_id = self.owner_task.id
-        project_id = self.owner_task.project_id
-        response = self.client.get(
-            reverse('task_view', kwargs={'task_id': task_id, 'project_id': project_id}))
-        self.assertEqual(response.status_code, 200)
 
 class ProjectViewTestSuite(TestCase):
 
@@ -378,7 +322,6 @@ class ProjectViewTestSuite(TestCase):
         # )
 
     def test_project_view_offer_response(self):
-        print("TEST")
         taskOffer = TaskOffer.objects.create(
             pk=1,
             task=self.task_1,
@@ -431,3 +374,302 @@ class ProjectViewTestSuite(TestCase):
         post.user = self.user_bidder
         response = project_view(post, self.test_project.id)
         self.assertEqual(200, response.status_code)
+
+##############################################################################################################
+class OutputCoverageTestSuite(TestCase):
+    '''
+    This test case will test all possible outputs related to sending a task offer. This encompasses:
+    * TaskOffer response with status code "Pending", "Declined" and "Accepted".
+
+    This means that we have 3 possible scenarios where we will first check the status of the project when 
+    we have a pending task offer then we check the status after we accept the offer, and finally we check 
+    the status after we decline an offer.
+
+    Possible statuses in Task model:
+    *  AWAITING_DELIVERY = 'ad'
+    *  PENDING_ACCEPTANCE = 'pa'
+    *  PENDING_PAYMENT = 'pp'
+    *  PAYMENT_SENT = 'ps'
+    *  DECLINED_DELIVERY = 'dd'
+
+    Possible statuses in TaskOffer model:
+    *  ACCEPTED = 'a'
+    *  PENDING = 'p'
+    *  DECLINED = 'd'
+    '''
+    def setUp(self):
+        self.client = Client()
+        self.factory = RequestFactory()
+
+        # Make the owner of the project
+        self.owner_user = User.objects.create_user(
+            username='luke',
+            first_name='Luke',
+            last_name='Skywalker',
+            email='luksky@starwars.com',
+        )
+        self.owner_user.save()
+
+        # Make a project and add the owner to it 
+        # Be sure to add a category to it as well
+        self.category = ProjectCategory.objects.create(name="Painting")
+        self.category.save()
+        self.owner_project = Project.objects.create(
+            user=self.owner_user.profile,
+            title='Test project',
+            description='Description',
+            category=self.category
+        )
+        self.owner_project.save()
+
+        # create freelancer to give offer
+        self.freelancer = User.objects.create_user(
+            username='indiana',
+            first_name='Indiana',
+            last_name='Jones',
+            email='indjon@dynamite.com'
+        )
+        self.freelancer.save()
+
+        # lets create 3 tasks for the project
+        self.project_task_1 = Task.objects.create(
+            project=self.owner_project,
+            title='Task 1 name',
+            description='Task 1 description'
+        )
+        self.project_task_1.save()
+
+        self.project_task_2 = Task.objects.create(
+            project=self.owner_project,
+            title='Task 2 name',
+            description='Task 2 description'
+        )
+        self.project_task_2.save()
+
+        self.project_task_3 = Task.objects.create(
+            project=self.owner_project,
+            title='Task 3 name',
+            description='Task 3 description'
+        )
+        self.project_task_3.save()
+
+
+        # Then we create 3 task offers from the freelanceer. Do note that initial status is pending
+        self.task_offer_1 = TaskOffer.objects.create(
+            task=self.project_task_1,
+            offerer=self.freelancer.profile,
+            title="Offer 1 title",
+            price=1,
+            description="Offer 1 description",
+            status=TaskOffer.PENDING
+        )
+        self.task_offer_1.save()
+
+        self.task_offer_2 = TaskOffer.objects.create(
+            task=self.project_task_2,
+            offerer=self.freelancer.profile,
+            title="Offer 2 title",
+            price=1,
+            description="Offer 2 description",
+            status=TaskOffer.PENDING
+        )
+        self.task_offer_2.save()
+
+        self.task_offer_3 = TaskOffer.objects.create(
+            task=self.project_task_2,
+            offerer=self.freelancer.profile,
+            title="Offer 3 title",
+            price=1,
+            description="Offer 3 description",
+            status=TaskOffer.PENDING
+        )
+        self.task_offer_3.save()
+
+    def test_task_view_not_logged_in(self):
+        task_id = self.project_task_1.id
+        project_id = self.project_task_1.project_id
+        response = self.client.get(reverse('task_view', kwargs={'task_id': task_id, 'project_id': project_id}))
+        self.assertEqual(response.status_code, 302)
+
+    def test_task_view_logged_in(self):
+        self.client.force_login(user=self.owner_user)
+        task_id = self.project_task_1.id
+        project_id = self.project_task_1.project_id
+        response = self.client.get(reverse('task_view', kwargs={'task_id': task_id, 'project_id': project_id}))
+        self.assertEqual(response.status_code, 200)
+    
+    def test_task_view_offer_submit(self):
+        post = self.factory.post(
+            '/projects/'+str(self.owner_project.id),
+            {
+                'offer_submit': True,
+                'title': 'This is purely a test offer. I have not actually done anything.',
+                # 'description': 'Same as above.',
+                'price': 20,
+                'taskvalue': self.project_task_1.id
+            }
+        )
+        post.user = self.freelancer
+        response = project_view(post, self.owner_project.id)
+        self.assertEqual(200, response.status_code)
+
+    '''
+    Possible statuses in Task model:
+    *  AWAITING_DELIVERY = 'ad'
+    *  PENDING_ACCEPTANCE = 'pa'
+    *  PENDING_PAYMENT = 'pp'
+    *  PAYMENT_SENT = 'ps'
+    *  DECLINED_DELIVERY = 'dd'
+
+    Possible statuses in TaskOffer model:
+    *  ACCEPTED = 'a'
+    *  PENDING = 'p'
+    *  DECLINED = 'd'
+    '''
+
+
+    def test_task_view_offer_submit_logic(self):
+     
+        # should be awaiting delivery (no one has delivered anything)
+        self.assertEqual('ad', self.project_task_2.status)
+
+        # should be pending since owner has not accepted or declined
+        self.assertEqual('p', self.task_offer_2.status)
+
+        # check that the task has no accepted offers
+        self.assertIsNone(Task.accepted_task_offer(self.project_task_2))
+        
+
+        # change status from pending to accepted
+        self.task_offer_2.status = TaskOffer.ACCEPTED
+        self.task_offer_2.save()
+        self.assertEqual('a', self.task_offer_2.status)
+
+        # should now be in query set for accepted offers
+        self.assertEqual(self.task_offer_2, Task.accepted_task_offer(self.project_task_2))
+        
+        # change status from accepted to declined
+        self.task_offer_2.status = TaskOffer.DECLINED
+        self.task_offer_2.save()
+        self.assertEqual('d', self.task_offer_2.status)
+
+        # check that the task has no accepted offers
+        self.assertIsNone(Task.accepted_task_offer(self.project_task_2))
+
+        # change status from accepted to accepted
+        self.task_offer_2.status = TaskOffer.ACCEPTED
+        self.task_offer_2.save()
+        self.assertEqual('a', self.task_offer_2.status)
+    
+    # TODO: do the same as below just for accept and delcine
+    # Check pending in client
+    def test_task_view_offer_pending(self):
+        task_offer_id = self.task_offer_2.id
+        response = self.client.post('/projects/' + str(self.owner_project.pk) + "/", {
+            'status': 'p',
+            'feedback': 'Still pending unfortunely',
+            'taskofferid': task_offer_id,
+            'offer_response': True
+        })
+        self.assertTrue(self.freelancer not in get_project_participants(self.owner_project))
+        self.assertIsNone(get_accepted_task_offer(self.project_task_2))
+        self.assertEqual('p', self.task_offer_2.status)
+        self.assertEqual(response.context['project'], self.owner_project)
+        self.assertEqual(check_taskoffers(self.project_task_2, self.freelancer)[0].status, 'p')
+
+    def test_task_view_offer_declined(self):
+        task_offer_id = self.task_offer_2.id
+        # POST OFFER
+        post = self.factory.post(
+            '/projects/'+str(self.owner_project.id),
+            {
+                'offer_submit': True,
+                'title': 'This is purely a test offer. I have not actually done anything.',
+                # 'description': 'Same as above.',
+                'price': 20,
+                'taskvalue': self.project_task_1.id
+            }
+        )
+        post.user = self.freelancer
+        response = project_view(post, self.owner_project.id)
+        # OFFER RESPONSE
+        post = self.factory.post(
+            '/projects/'+str(self.owner_project.id),
+            {
+                'status': 'd',
+                'feedback': 'declined.',
+                'taskofferid': task_offer_id,
+                'offer_response': True
+            }
+        )
+        post.user = self.owner_user
+        response = project_view(post, self.owner_project.id)
+        self.assertEqual(200, response.status_code)
+
+        query = self.owner_project.participants.all()
+        participants = set()
+        for participant in query:
+            participants.add(participant.user.username)
+        
+        self.assertTrue(self.freelancer.username not in participants)
+        self.assertIsNone(get_accepted_task_offer(self.project_task_2))
+
+        # check client context
+        response = self.client.post('/projects/' + str(self.owner_project.pk) + "/", {
+            'status': 'd',
+            'feedback': 'declined.',
+            'taskofferid': task_offer_id,
+            'offer_response': True
+        })
+        self.assertEqual(response.context['project'], self.owner_project)
+        self.assertEqual(check_taskoffers(self.project_task_2, self.freelancer)[0].status, 'd')
+
+    def test_task_view_offer_accepted(self):
+        task_offer_id = self.task_offer_2.id
+        # POST OFFER
+        post = self.factory.post(
+            '/projects/'+str(self.owner_project.id),
+            {
+                'offer_submit': True,
+                'title': 'This is purely a test offer. I have not actually done anything.',
+                # 'description': 'Same as above.',
+                'price': 20,
+                'taskvalue': self.project_task_1.id
+            }
+        )
+        post.user = self.freelancer
+        response = project_view(post, self.owner_project.id)
+        # OFFER RESPONSE
+        post = self.factory.post(
+            '/projects/'+str(self.owner_project.id),
+            {
+                'status': 'a',
+                'feedback': 'accepted.',
+                'taskofferid': task_offer_id,
+                'offer_response': True
+            }
+        )
+        post.user = self.owner_user
+        response = project_view(post, self.owner_project.id)
+        self.assertEqual(200, response.status_code)
+
+        query = self.owner_project.participants.all()
+        participants = set()
+        for participant in query:
+            participants.add(participant.user.username)
+        
+        self.assertTrue(self.freelancer.username in participants)
+        self.assertIsNotNone(get_accepted_task_offer(self.project_task_2))
+
+        # check client context
+        response = self.client.post('/projects/' + str(self.owner_project.pk) + "/", {
+            'status': 'a',
+            'feedback': 'accepted.',
+            'taskofferid': task_offer_id,
+            'offer_response': True
+        })
+        self.assertEqual(response.context['project'], self.owner_project)
+        self.assertEqual(check_taskoffers(self.project_task_2, self.freelancer)[0].status, 'a')
+        print(check_taskoffers(self.project_task_2, self.freelancer))
+
+###############################################################################################
