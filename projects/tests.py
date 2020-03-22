@@ -6,6 +6,18 @@ from .models import Project, Task, TaskFile, TaskOffer, Delivery, ProjectCategor
 from user.models import User, Profile
 from django.urls import reverse
 from .templatetags.project_extras import get_accepted_task_offer, check_taskoffers, get_project_participants, get_project_participants_string
+from django.contrib.messages.storage.fallback import FallbackStorage
+
+def createMakeOfferContent(fieldToTest, valueForField):
+    taskOfferFormData = {
+    "title": "Legal title",
+    "description": "Legal description",
+    "price": "2000",
+    "taskvalue": "1",
+    "offer_submit": True,
+    }
+    taskOfferFormData[fieldToTest] = valueForField
+    return taskOfferFormData
 
 
 class GetUserTaskPermissionsTest(TestCase):
@@ -672,4 +684,365 @@ class OutputCoverageTestSuite(TestCase):
         self.assertEqual(check_taskoffers(self.project_task_2, self.freelancer)[0].status, 'a')
         print(check_taskoffers(self.project_task_2, self.freelancer))
 
-###############################################################################################
+class MakeOfferTitleTestSuite(TestCase):
+    def setUp(self):
+        self.project_owner_user = User.objects.create_user(
+            username='elizabeth',
+            first_name='Elizabeth',
+            last_name='Bennet',
+            email='eliben@pride.com',
+        )
+        self.project_owner_user.save()
+        self.category = ProjectCategory.objects.create(name="Painting")
+        self.category.save()
+        self.project_to_make_offer_to = Project.objects.create(
+            user=self.project_owner_user.profile,
+            title='Test project',
+            description='Description',
+            category=self.category
+        )
+        self.project_to_make_offer_to.save()
+        self.user_making_offer = User.objects.create_user(
+            username='sherlock',
+            first_name='Sherlock',
+            last_name='Holmes',
+            email='shehol@mystery.com'
+        )
+        self.user_making_offer.save()
+        self.owner_task = Task.objects.create(
+            project=self.project_to_make_offer_to,
+            title='Task name',
+            description='Task description'
+        )
+        self.owner_task.save()
+        self.factory = RequestFactory()
+
+    def getMakeOfferRequest(self, data):
+        request = self.factory.post('/project/1', data)
+        setattr(request, 'session', 'session')
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        
+        return request
+
+    def test_make_offer_title_too_short(self):
+        taskOffersBefore = TaskOffer.objects.all()
+        self.assertEqual(len(taskOffersBefore), 0)
+        titleValue = ""
+        data = createMakeOfferContent("title", titleValue)
+
+        request = self.getMakeOfferRequest(data)
+        
+        request.user = self.user_making_offer
+        response = project_view(request, self.project_to_make_offer_to.id)
+        self.assertEqual(200, response.status_code)
+        newProjectOffers = TaskOffer.objects.all()
+        self.assertEqual(len(newProjectOffers), 0)
+        TaskOffer.objects.all().delete()
+
+    def test_make_offer_title_legal_min_length(self):
+        taskOffersBefore = TaskOffer.objects.all()
+        self.assertEqual(len(taskOffersBefore), 0)
+
+        titleValue = "a"
+        data = createMakeOfferContent("title", titleValue)
+
+        request = self.getMakeOfferRequest(data)
+        
+        request.user = self.user_making_offer
+        response = project_view(request, self.project_to_make_offer_to.id)
+        self.assertEqual(200, response.status_code)
+        newProjectOffers = TaskOffer.objects.all()
+        self.assertEqual(len(newProjectOffers), 1)
+        TaskOffer.objects.all().delete()
+
+    def test_make_offer_title_legal_length(self):
+        taskOffersBefore = TaskOffer.objects.all()
+        self.assertEqual(len(taskOffersBefore), 0)
+
+        titleValue = "a"*15
+        data = createMakeOfferContent("title", titleValue)
+
+        request = self.getMakeOfferRequest(data)
+        
+        request.user = self.user_making_offer
+        response = project_view(request, self.project_to_make_offer_to.id)
+        self.assertEqual(200, response.status_code)
+        newProjectOffers = TaskOffer.objects.all()
+        self.assertEqual(len(newProjectOffers), 1)
+        TaskOffer.objects.all().delete()
+
+    def test_make_offer_title_legal_max_length(self):
+        taskOffersBefore = TaskOffer.objects.all()
+        self.assertEqual(len(taskOffersBefore), 0)
+
+        titleValue = "a"*200
+        data = createMakeOfferContent("title", titleValue)
+
+        request = self.getMakeOfferRequest(data)
+        
+        request.user = self.user_making_offer
+        response = project_view(request, self.project_to_make_offer_to.id)
+        self.assertEqual(200, response.status_code)
+        newProjectOffers = TaskOffer.objects.all()
+        self.assertEqual(len(newProjectOffers), 1)
+        TaskOffer.objects.all().delete()
+
+    def test_make_offer_title_legal_too_long(self):
+        taskOffersBefore = TaskOffer.objects.all()
+        self.assertEqual(len(taskOffersBefore), 0)
+
+        titleValue = "a"*201
+        data = createMakeOfferContent("title", titleValue)
+
+        request = self.getMakeOfferRequest(data)
+        
+        request.user = self.user_making_offer
+        response = project_view(request, self.project_to_make_offer_to.id)
+        self.assertEqual(200, response.status_code)
+        newProjectOffers = TaskOffer.objects.all()
+        self.assertEqual(len(newProjectOffers), 0)
+        TaskOffer.objects.all().delete()
+
+class MakeOfferDescriptionTestSuite(TestCase):
+    def setUp(self):
+        self.project_owner_user = User.objects.create_user(
+            username='elizabeth',
+            first_name='Elizabeth',
+            last_name='Bennet',
+            email='eliben@pride.com',
+        )
+        self.project_owner_user.save()
+        self.category = ProjectCategory.objects.create(name="Painting")
+        self.category.save()
+        self.project_to_make_offer_to = Project.objects.create(
+            user=self.project_owner_user.profile,
+            title='Test project',
+            description='Description',
+            category=self.category
+        )
+        self.project_to_make_offer_to.save()
+        self.user_making_offer = User.objects.create_user(
+            username='sherlock',
+            first_name='Sherlock',
+            last_name='Holmes',
+            email='shehol@mystery.com'
+        )
+        self.user_making_offer.save()
+        self.owner_task = Task.objects.create(
+            project=self.project_to_make_offer_to,
+            title='Task name',
+            description='Task description'
+        )
+        self.owner_task.save()
+        self.factory = RequestFactory()
+
+    def getMakeOfferRequest(self, data):
+        request = self.factory.post('/project/1', data)
+        setattr(request, 'session', 'session')
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        
+        return request
+
+    def test_make_offer_description_too_short(self):
+        taskOffersBefore = TaskOffer.objects.all()
+        self.assertEqual(len(taskOffersBefore), 0)
+        descriptionValue = ""
+        data = createMakeOfferContent("description", descriptionValue)
+
+        request = self.getMakeOfferRequest(data)
+        
+        request.user = self.user_making_offer
+        response = project_view(request, self.project_to_make_offer_to.id)
+        self.assertEqual(200, response.status_code)
+        newProjectOffers = TaskOffer.objects.all()
+        self.assertEqual(len(newProjectOffers), 0)
+        TaskOffer.objects.all().delete()
+
+    def test_make_offer_description_legal_min_length(self):
+        taskOffersBefore = TaskOffer.objects.all()
+        self.assertEqual(len(taskOffersBefore), 0)
+
+        descriptionValue = "a"
+        data = createMakeOfferContent("description", descriptionValue)
+
+        request = self.getMakeOfferRequest(data)
+        
+        request.user = self.user_making_offer
+        response = project_view(request, self.project_to_make_offer_to.id)
+        self.assertEqual(200, response.status_code)
+        newProjectOffers = TaskOffer.objects.all()
+        self.assertEqual(len(newProjectOffers), 1)
+        TaskOffer.objects.all().delete()
+
+    def test_make_offer_description_legal_length(self):
+        taskOffersBefore = TaskOffer.objects.all()
+        self.assertEqual(len(taskOffersBefore), 0)
+
+        descriptionValue = "a"*100
+        data = createMakeOfferContent("description", descriptionValue)
+
+        request = self.getMakeOfferRequest(data)
+        
+        request.user = self.user_making_offer
+        response = project_view(request, self.project_to_make_offer_to.id)
+        self.assertEqual(200, response.status_code)
+        newProjectOffers = TaskOffer.objects.all()
+        self.assertEqual(len(newProjectOffers), 1)
+        TaskOffer.objects.all().delete()
+
+    def test_make_offer_description_legal_max_length(self):
+        taskOffersBefore = TaskOffer.objects.all()
+        self.assertEqual(len(taskOffersBefore), 0)
+
+        descriptionValue = "a"*500
+        data = createMakeOfferContent("description", descriptionValue)
+
+        request = self.getMakeOfferRequest(data)
+        
+        request.user = self.user_making_offer
+        response = project_view(request, self.project_to_make_offer_to.id)
+        self.assertEqual(200, response.status_code)
+        newProjectOffers = TaskOffer.objects.all()
+        self.assertEqual(len(newProjectOffers), 1)
+        TaskOffer.objects.all().delete()
+
+    def test_make_offer_description_legal_too_long(self):
+        taskOffersBefore = TaskOffer.objects.all()
+        self.assertEqual(len(taskOffersBefore), 0)
+
+        descriptionValue = "a"*501
+        data = createMakeOfferContent("description", descriptionValue)
+
+        request = self.getMakeOfferRequest(data)
+        
+        request.user = self.user_making_offer
+        response = project_view(request, self.project_to_make_offer_to.id)
+        self.assertEqual(200, response.status_code)
+        newProjectOffers = TaskOffer.objects.all()
+        self.assertEqual(len(newProjectOffers), 0)
+        TaskOffer.objects.all().delete()
+
+
+class MakeOfferPriceTestSuite(TestCase):
+    def setUp(self):
+        self.project_owner_user = User.objects.create_user(
+            username='elizabeth',
+            first_name='Elizabeth',
+            last_name='Bennet',
+            email='eliben@pride.com',
+        )
+        self.project_owner_user.save()
+        self.category = ProjectCategory.objects.create(name="Painting")
+        self.category.save()
+        self.project_to_make_offer_to = Project.objects.create(
+            user=self.project_owner_user.profile,
+            title='Test project',
+            description='Description',
+            category=self.category
+        )
+        self.project_to_make_offer_to.save()
+        self.user_making_offer = User.objects.create_user(
+            username='sherlock',
+            first_name='Sherlock',
+            last_name='Holmes',
+            email='shehol@mystery.com'
+        )
+        self.user_making_offer.save()
+        self.owner_task = Task.objects.create(
+            project=self.project_to_make_offer_to,
+            title='Task name',
+            description='Task description'
+        )
+        self.owner_task.save()
+        self.factory = RequestFactory()
+
+    def getMakeOfferRequest(self, data):
+        request = self.factory.post('/project/1', data)
+        setattr(request, 'session', 'session')
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        
+        return request
+
+    @unittest.skip("Should not accept negative values here")
+    def test_make_offer_price_too_short(self):
+        taskOffersBefore = TaskOffer.objects.all()
+        self.assertEqual(len(taskOffersBefore), 0)
+        priceValue = -1000
+        data = createMakeOfferContent("price", priceValue)
+
+        request = self.getMakeOfferRequest(data)
+        
+        request.user = self.user_making_offer
+        response = project_view(request, self.project_to_make_offer_to.id)
+        self.assertEqual(200, response.status_code)
+        newProjectOffers = TaskOffer.objects.all()
+        self.assertEqual(len(newProjectOffers), 0)
+        TaskOffer.objects.all().delete()
+
+    def test_make_offer_price_legal_min_length(self):
+        taskOffersBefore = TaskOffer.objects.all()
+        self.assertEqual(len(taskOffersBefore), 0)
+
+        priceValue = 0
+        data = createMakeOfferContent("price", priceValue)
+
+        request = self.getMakeOfferRequest(data)
+        
+        request.user = self.user_making_offer
+        response = project_view(request, self.project_to_make_offer_to.id)
+        self.assertEqual(200, response.status_code)
+        newProjectOffers = TaskOffer.objects.all()
+        self.assertEqual(len(newProjectOffers), 1)
+        TaskOffer.objects.all().delete()
+
+    def test_make_offer_price_legal_length(self):
+        taskOffersBefore = TaskOffer.objects.all()
+        self.assertEqual(len(taskOffersBefore), 0)
+
+        priceValue = 25000
+        data = createMakeOfferContent("price", priceValue)
+
+        request = self.getMakeOfferRequest(data)
+        
+        request.user = self.user_making_offer
+        response = project_view(request, self.project_to_make_offer_to.id)
+        self.assertEqual(200, response.status_code)
+        newProjectOffers = TaskOffer.objects.all()
+        self.assertEqual(len(newProjectOffers), 1)
+        TaskOffer.objects.all().delete()
+
+    def test_make_offer_price_legal_max_length(self):
+        taskOffersBefore = TaskOffer.objects.all()
+        self.assertEqual(len(taskOffersBefore), 0)
+
+        priceValue = pow(2, 63) - 1
+        data = createMakeOfferContent("price", priceValue)
+
+        request = self.getMakeOfferRequest(data)
+        
+        request.user = self.user_making_offer
+        response = project_view(request, self.project_to_make_offer_to.id)
+        self.assertEqual(200, response.status_code)
+        newProjectOffers = TaskOffer.objects.all()
+        self.assertEqual(len(newProjectOffers), 1)
+        TaskOffer.objects.all().delete()
+
+    @unittest.skip("Overflow integer")
+    def test_make_offer_price_legal_too_long(self):
+        taskOffersBefore = TaskOffer.objects.all()
+        self.assertEqual(len(taskOffersBefore), 0)
+
+        priceValue = pow(2, 63)
+        data = createMakeOfferContent("price", priceValue)
+
+        request = self.getMakeOfferRequest(data)
+        
+        request.user = self.user_making_offer
+        response = project_view(request, self.project_to_make_offer_to.id)
+        self.assertEqual(200, response.status_code)
+        newProjectOffers = TaskOffer.objects.all()
+        self.assertEqual(len(newProjectOffers), 0)
+        TaskOffer.objects.all().delete()
