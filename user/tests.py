@@ -130,12 +130,11 @@ class SignupUsernameTestSuite(TestCase):
 
         request = self.getSignupRequest(data)
         
-        request.user = self.user_making_offer
-        response = project_view(request, self.project_to_make_offer_to.id)
-        self.assertEqual(200, response.status_code)
+        response = signup(request)
+        self.assertEqual(302, response.status_code)
         createdUsers = User.objects.all()
         self.assertEqual(len(createdUsers), 1)
-        TaskOffer.objects.all().delete()
+        User.objects.all().delete()
 
     def test_signup_username_max_value(self):
         createdUsers = User.objects.all()
@@ -246,12 +245,11 @@ class SignupFirstnameTestSuite(TestCase):
 
         request = self.getSignupRequest(data)
         
-        request.user = self.user_making_offer
-        response = project_view(request, self.project_to_make_offer_to.id)
-        self.assertEqual(200, response.status_code)
+        response = signup(request)
+        self.assertEqual(302, response.status_code)
         createdUsers = User.objects.all()
         self.assertEqual(len(createdUsers), 1)
-        TaskOffer.objects.all().delete()
+        User.objects.all().delete()
 
     def test_signup_firstname_max_value(self):
         createdUsers = User.objects.all()
@@ -361,12 +359,11 @@ class SignupLastnameTestSuite(TestCase):
 
         request = self.getSignupRequest(data)
         
-        request.user = self.user_making_offer
-        response = project_view(request, self.project_to_make_offer_to.id)
-        self.assertEqual(200, response.status_code)
+        response = signup(request)
+        self.assertEqual(302, response.status_code)
         createdUsers = User.objects.all()
         self.assertEqual(len(createdUsers), 1)
-        TaskOffer.objects.all().delete()
+        User.objects.all().delete()
 
     def test_signup_lastname_max_value(self):
         createdUsers = User.objects.all()
@@ -591,12 +588,11 @@ class SignupPhoneNumberTestSuite(TestCase):
 
         request = self.getSignupRequest(data)
         
-        request.user = self.user_making_offer
-        response = project_view(request, self.project_to_make_offer_to.id)
-        self.assertEqual(200, response.status_code)
+        response = signup(request)
+        self.assertEqual(302, response.status_code)
         createdUsers = User.objects.all()
         self.assertEqual(len(createdUsers), 1)
-        TaskOffer.objects.all().delete()
+        User.objects.all().delete()
 
     def test_signup_phone_number_max_value(self):
         createdUsers = User.objects.all()
@@ -706,12 +702,11 @@ class SignupCountryTestSuite(TestCase):
 
         request = self.getSignupRequest(data)
         
-        request.user = self.user_making_offer
-        response = project_view(request, self.project_to_make_offer_to.id)
-        self.assertEqual(200, response.status_code)
+        response = signup(request)
+        self.assertEqual(302, response.status_code)
         createdUsers = User.objects.all()
         self.assertEqual(len(createdUsers), 1)
-        TaskOffer.objects.all().delete()
+        User.objects.all().delete()
 
     def test_signup_country_max_value(self):
         createdUsers = User.objects.all()
@@ -893,12 +888,11 @@ class SignupCityTestSuite(TestCase):
 
         request = self.getSignupRequest(data)
         
-        request.user = self.user_making_offer
-        response = project_view(request, self.project_to_make_offer_to.id)
-        self.assertEqual(200, response.status_code)
+        response = signup(request)
+        self.assertEqual(302, response.status_code)
         createdUsers = User.objects.all()
         self.assertEqual(len(createdUsers), 1)
-        TaskOffer.objects.all().delete()
+        User.objects.all().delete()
 
     def test_signup_city_max_value(self):
         createdUsers = User.objects.all()
@@ -1009,12 +1003,11 @@ class SignupPostalCodeTestSuite(TestCase):
 
         request = self.getSignupRequest(data)
         
-        request.user = self.user_making_offer
-        response = project_view(request, self.project_to_make_offer_to.id)
-        self.assertEqual(200, response.status_code)
+        response = signup(request)
+        self.assertEqual(302, response.status_code)
         createdUsers = User.objects.all()
         self.assertEqual(len(createdUsers), 1)
-        TaskOffer.objects.all().delete()
+        User.objects.all().delete()
 
     def test_signup_postal_code_max_value(self):
         createdUsers = User.objects.all()
@@ -1125,12 +1118,11 @@ class SignupStreetAddressTestSuite(TestCase):
 
         request = self.getSignupRequest(data)
         
-        request.user = self.user_making_offer
-        response = project_view(request, self.project_to_make_offer_to.id)
-        self.assertEqual(200, response.status_code)
+        response = signup(request)
+        self.assertEqual(302, response.status_code)
         createdUsers = User.objects.all()
         self.assertEqual(len(createdUsers), 1)
-        TaskOffer.objects.all().delete()
+        User.objects.all().delete()
 
     def test_signup_street_address_max_value(self):
         createdUsers = User.objects.all()
