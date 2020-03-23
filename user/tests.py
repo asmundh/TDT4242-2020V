@@ -92,6 +92,20 @@ class SignupUsernameTestSuite(TestCase):
         self.assertEqual(302, response.status_code)
         User.objects.all().delete()
 
+    def test_signup_username_just_above_min_legal_length(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+        
+        usernameTestValue = "a"*2
+        data = createSignupContent("username", usernameTestValue)
+        request = self.getSignupRequest(data)
+        response = signup(request)
+        createdUsers = User.objects.all()
+
+        self.assertEqual(len(createdUsers), 1)
+        self.assertEqual(302, response.status_code)
+        User.objects.all().delete()
+
     def test_signup_username_legal_value(self):
         createdUsers = User.objects.all()
         self.assertEqual(len(createdUsers), 0)
@@ -106,6 +120,22 @@ class SignupUsernameTestSuite(TestCase):
         self.assertEqual(len(createdUsers), 1)
         self.assertEqual(302, response.status_code)
         User.objects.all().delete()
+
+    def test_signup_username_just_below_max_legal_length(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+
+        usernameValue = "a"*149
+        data = createSignupContent("username", usernameValue)
+
+        request = self.getSignupRequest(data)
+        
+        request.user = self.user_making_offer
+        response = project_view(request, self.project_to_make_offer_to.id)
+        self.assertEqual(200, response.status_code)
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 1)
+        TaskOffer.objects.all().delete()
 
     def test_signup_username_max_value(self):
         createdUsers = User.objects.all()
@@ -178,6 +208,20 @@ class SignupFirstnameTestSuite(TestCase):
         self.assertEqual(302, response.status_code)
         User.objects.all().delete()
 
+    def test_signup_firstname_just_above_min_legal_length(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+        
+        firstnameTestValue = "a"*2
+        data = createSignupContent("firstname", firstnameTestValue)
+        request = self.getSignupRequest(data)
+        response = signup(request)
+        createdUsers = User.objects.all()
+
+        self.assertEqual(len(createdUsers), 1)
+        self.assertEqual(302, response.status_code)
+        User.objects.all().delete()
+
     def test_signup_firstname_legal_value(self):
         createdUsers = User.objects.all()
         self.assertEqual(len(createdUsers), 0)
@@ -192,6 +236,22 @@ class SignupFirstnameTestSuite(TestCase):
         self.assertEqual(len(createdUsers), 1)
         self.assertEqual(302, response.status_code)
         User.objects.all().delete()
+
+    def test_signup_firstname_just_below_max_legal_length(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+
+        firstnameValue = "a"*29
+        data = createSignupContent("firstname", firstnameValue)
+
+        request = self.getSignupRequest(data)
+        
+        request.user = self.user_making_offer
+        response = project_view(request, self.project_to_make_offer_to.id)
+        self.assertEqual(200, response.status_code)
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 1)
+        TaskOffer.objects.all().delete()
 
     def test_signup_firstname_max_value(self):
         createdUsers = User.objects.all()
@@ -249,6 +309,34 @@ class SignupLastnameTestSuite(TestCase):
         self.assertEqual(200, response.status_code)
         User.objects.all().delete()
 
+    def test_signup_lastname_minimum_value(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+        
+        lastnameTestValue = "a"
+        data = createSignupContent("lastname", lastnameTestValue)
+        request = self.getSignupRequest(data)
+        response = signup(request)
+        createdUsers = User.objects.all()
+
+        self.assertEqual(len(createdUsers), 1)
+        self.assertEqual(302, response.status_code)
+        User.objects.all().delete()
+
+    def test_signup_lastname_just_above_min_legal_length(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+        
+        lastnameTestValue = "a"*2
+        data = createSignupContent("lastname", lastnameTestValue)
+        request = self.getSignupRequest(data)
+        response = signup(request)
+        createdUsers = User.objects.all()
+
+        self.assertEqual(len(createdUsers), 1)
+        self.assertEqual(302, response.status_code)
+        User.objects.all().delete()
+
     def test_signup_lastname_legal_value(self):
         createdUsers = User.objects.all()
         self.assertEqual(len(createdUsers), 0)
@@ -263,6 +351,22 @@ class SignupLastnameTestSuite(TestCase):
         self.assertEqual(len(createdUsers), 1)
         self.assertEqual(302, response.status_code)
         User.objects.all().delete()
+
+    def test_signup_lastname_just_below_max_legal_length(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+
+        lastnameValue = "a"*29
+        data = createSignupContent("lastname", lastnameValue)
+
+        request = self.getSignupRequest(data)
+        
+        request.user = self.user_making_offer
+        response = project_view(request, self.project_to_make_offer_to.id)
+        self.assertEqual(200, response.status_code)
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 1)
+        TaskOffer.objects.all().delete()
 
     def test_signup_lastname_max_value(self):
         createdUsers = User.objects.all()
@@ -435,6 +539,34 @@ class SignupPhoneNumberTestSuite(TestCase):
         self.assertEqual(200, response.status_code)
         User.objects.all().delete()
 
+    def test_signup_phone_number_minimum_value(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+        
+        phone_numberTestValue = "a"
+        data = createSignupContent("phone_number", phone_numberTestValue)
+        request = self.getSignupRequest(data)
+        response = signup(request)
+        createdUsers = User.objects.all()
+
+        self.assertEqual(len(createdUsers), 1)
+        self.assertEqual(302, response.status_code)
+        User.objects.all().delete()
+
+    def test_signup_phone_number_just_above_min_legal_length(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+        
+        phone_numberTestValue = "a"*2
+        data = createSignupContent("phone_number", phone_numberTestValue)
+        request = self.getSignupRequest(data)
+        response = signup(request)
+        createdUsers = User.objects.all()
+
+        self.assertEqual(len(createdUsers), 1)
+        self.assertEqual(302, response.status_code)
+        User.objects.all().delete()
+
     def test_signup_phone_number_legal_value(self):
         createdUsers = User.objects.all()
         self.assertEqual(len(createdUsers), 0)
@@ -449,6 +581,22 @@ class SignupPhoneNumberTestSuite(TestCase):
         self.assertEqual(len(createdUsers), 1)
         self.assertEqual(302, response.status_code)
         User.objects.all().delete()
+
+    def test_signup_phone_number_just_below_max_legal_length(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+
+        phone_numberValue = "a"*49
+        data = createSignupContent("phone_number", phone_numberValue)
+
+        request = self.getSignupRequest(data)
+        
+        request.user = self.user_making_offer
+        response = project_view(request, self.project_to_make_offer_to.id)
+        self.assertEqual(200, response.status_code)
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 1)
+        TaskOffer.objects.all().delete()
 
     def test_signup_phone_number_max_value(self):
         createdUsers = User.objects.all()
@@ -506,6 +654,34 @@ class SignupCountryTestSuite(TestCase):
         self.assertEqual(200, response.status_code)
         User.objects.all().delete()
 
+    def test_signup_country_minimum_value(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+        
+        countryTestValue = "a"
+        data = createSignupContent("country", countryTestValue)
+        request = self.getSignupRequest(data)
+        response = signup(request)
+        createdUsers = User.objects.all()
+
+        self.assertEqual(len(createdUsers), 1)
+        self.assertEqual(302, response.status_code)
+        User.objects.all().delete()
+
+    def test_signup_country_just_above_min_legal_length(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+        
+        countryTestValue = "a"*2
+        data = createSignupContent("country", countryTestValue)
+        request = self.getSignupRequest(data)
+        response = signup(request)
+        createdUsers = User.objects.all()
+
+        self.assertEqual(len(createdUsers), 1)
+        self.assertEqual(302, response.status_code)
+        User.objects.all().delete()
+
     def test_signup_country_legal_value(self):
         createdUsers = User.objects.all()
         self.assertEqual(len(createdUsers), 0)
@@ -520,6 +696,22 @@ class SignupCountryTestSuite(TestCase):
         self.assertEqual(len(createdUsers), 1)
         self.assertEqual(302, response.status_code)
         User.objects.all().delete()
+
+    def test_signup_country_just_below_max_legal_length(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+
+        countryValue = "a"*49
+        data = createSignupContent("country", countryValue)
+
+        request = self.getSignupRequest(data)
+        
+        request.user = self.user_making_offer
+        response = project_view(request, self.project_to_make_offer_to.id)
+        self.assertEqual(200, response.status_code)
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 1)
+        TaskOffer.objects.all().delete()
 
     def test_signup_country_max_value(self):
         createdUsers = User.objects.all()
@@ -649,6 +841,34 @@ class SignupCityTestSuite(TestCase):
         self.assertEqual(200, response.status_code)
         User.objects.all().delete()
 
+    def test_signup_city_minimum_value(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+        
+        cityTestValue = "a"
+        data = createSignupContent("city", cityTestValue)
+        request = self.getSignupRequest(data)
+        response = signup(request)
+        createdUsers = User.objects.all()
+
+        self.assertEqual(len(createdUsers), 1)
+        self.assertEqual(302, response.status_code)
+        User.objects.all().delete()
+
+    def test_signup_city_just_above_min_legal_length(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+        
+        cityTestValue = "a"*2
+        data = createSignupContent("city", cityTestValue)
+        request = self.getSignupRequest(data)
+        response = signup(request)
+        createdUsers = User.objects.all()
+
+        self.assertEqual(len(createdUsers), 1)
+        self.assertEqual(302, response.status_code)
+        User.objects.all().delete()
+
     def test_signup_city_legal_value(self):
         createdUsers = User.objects.all()
         self.assertEqual(len(createdUsers), 0)
@@ -663,6 +883,22 @@ class SignupCityTestSuite(TestCase):
         self.assertEqual(len(createdUsers), 1)
         self.assertEqual(302, response.status_code)
         User.objects.all().delete()
+
+    def test_signup_city_just_below_max_legal_length(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+
+        cityValue = "a"*49
+        data = createSignupContent("city", cityValue)
+
+        request = self.getSignupRequest(data)
+        
+        request.user = self.user_making_offer
+        response = project_view(request, self.project_to_make_offer_to.id)
+        self.assertEqual(200, response.status_code)
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 1)
+        TaskOffer.objects.all().delete()
 
     def test_signup_city_max_value(self):
         createdUsers = User.objects.all()
@@ -721,6 +957,34 @@ class SignupPostalCodeTestSuite(TestCase):
         self.assertEqual(200, response.status_code)
         User.objects.all().delete()
 
+    def test_signup_postal_code_minimum_value(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+        
+        postal_codeTestValue = "a"
+        data = createSignupContent("postal_code", postal_codeTestValue)
+        request = self.getSignupRequest(data)
+        response = signup(request)
+        createdUsers = User.objects.all()
+
+        self.assertEqual(len(createdUsers), 1)
+        self.assertEqual(302, response.status_code)
+        User.objects.all().delete()
+
+    def test_signup_postal_code_just_above_min_legal_length(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+        
+        postal_codeTestValue = "a"*2
+        data = createSignupContent("postal_code", postal_codeTestValue)
+        request = self.getSignupRequest(data)
+        response = signup(request)
+        createdUsers = User.objects.all()
+
+        self.assertEqual(len(createdUsers), 1)
+        self.assertEqual(302, response.status_code)
+        User.objects.all().delete()
+
     def test_signup_postal_code_legal_value(self):
         createdUsers = User.objects.all()
         self.assertEqual(len(createdUsers), 0)
@@ -735,6 +999,22 @@ class SignupPostalCodeTestSuite(TestCase):
         self.assertEqual(len(createdUsers), 1)
         self.assertEqual(302, response.status_code)
         User.objects.all().delete()
+
+    def test_signup_postal_code_just_below_max_legal_length(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+
+        postal_codeValue = "a"*49
+        data = createSignupContent("postal_code", postal_codeValue)
+
+        request = self.getSignupRequest(data)
+        
+        request.user = self.user_making_offer
+        response = project_view(request, self.project_to_make_offer_to.id)
+        self.assertEqual(200, response.status_code)
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 1)
+        TaskOffer.objects.all().delete()
 
     def test_signup_postal_code_max_value(self):
         createdUsers = User.objects.all()
@@ -793,6 +1073,34 @@ class SignupStreetAddressTestSuite(TestCase):
         self.assertEqual(200, response.status_code)
         User.objects.all().delete()
 
+    def test_signup_street_address_minimum_value(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+        
+        street_addressTestValue = "a"
+        data = createSignupContent("street_address", street_addressTestValue)
+        request = self.getSignupRequest(data)
+        response = signup(request)
+        createdUsers = User.objects.all()
+
+        self.assertEqual(len(createdUsers), 1)
+        self.assertEqual(302, response.status_code)
+        User.objects.all().delete()
+
+    def test_signup_street_address_just_above_min_legal_length(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+        
+        street_addressTestValue = "a"*2
+        data = createSignupContent("street_address", street_addressTestValue)
+        request = self.getSignupRequest(data)
+        response = signup(request)
+        createdUsers = User.objects.all()
+
+        self.assertEqual(len(createdUsers), 1)
+        self.assertEqual(302, response.status_code)
+        User.objects.all().delete()
+
     def test_signup_street_address_legal_value(self):
         createdUsers = User.objects.all()
         self.assertEqual(len(createdUsers), 0)
@@ -807,6 +1115,22 @@ class SignupStreetAddressTestSuite(TestCase):
         self.assertEqual(len(createdUsers), 1)
         self.assertEqual(302, response.status_code)
         User.objects.all().delete()
+
+    def test_signup_street_address_just_below_max_legal_length(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+
+        street_addressValue = "a"*49
+        data = createSignupContent("street_address", street_addressValue)
+
+        request = self.getSignupRequest(data)
+        
+        request.user = self.user_making_offer
+        response = project_view(request, self.project_to_make_offer_to.id)
+        self.assertEqual(200, response.status_code)
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 1)
+        TaskOffer.objects.all().delete()
 
     def test_signup_street_address_max_value(self):
         createdUsers = User.objects.all()
@@ -862,6 +1186,34 @@ class SignupPasswordTestSuite(TestCase):
 
         self.assertEqual(len(createdUsers), 0)
         self.assertEqual(200, response.status_code)
+        User.objects.all().delete()
+
+    def test_signup_password_minimum_value(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+        
+        passwordTestValue = "Stringtw2"
+        data = createSignupContent(["password1", "password2"], [passwordTestValue, passwordTestValue])
+        request = self.getSignupRequest(data)
+        response = signup(request)
+        createdUsers = User.objects.all()
+
+        self.assertEqual(len(createdUsers), 1)
+        self.assertEqual(302, response.status_code)
+        User.objects.all().delete()
+
+    def test_signup_password_just_above_min_legal_length(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+        
+        passwordTestValue = "Stringtw2F"
+        data = createSignupContent(["password1", "password2"], [passwordTestValue, passwordTestValue])
+        request = self.getSignupRequest(data)
+        response = signup(request)
+        createdUsers = User.objects.all()
+
+        self.assertEqual(len(createdUsers), 1)
+        self.assertEqual(302, response.status_code)
         User.objects.all().delete()
 
     def test_signup_password_legal_value(self):
@@ -937,12 +1289,41 @@ class SignupEmailTestSuite(TestCase):
         self.assertEqual(200, response.status_code)
         User.objects.all().delete()
 
+    def test_signup_email_minimum_value(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+        
+        emailTestValue = "a@a.no"
+        data = createSignupContent(["email", "email_confirmation"], [emailTestValue, emailTestValue])
+        request = self.getSignupRequest(data)
+        response = signup(request)
+        createdUsers = User.objects.all()
+
+        self.assertEqual(len(createdUsers), 1)
+        self.assertEqual(302, response.status_code)
+        User.objects.all().delete()
+
     def test_signup_email_legal_value(self):
         createdUsers = User.objects.all()
         self.assertEqual(len(createdUsers), 0)
         User.objects.all().delete()
         
         emailTestValue = "lovlig@hotmail.com"
+        data = createSignupContent(["email", "email_confirmation"], [emailTestValue, emailTestValue])
+        request = self.getSignupRequest(data)
+        response = signup(request)
+        createdUsers = User.objects.all()
+
+        self.assertEqual(len(createdUsers), 1)
+        self.assertEqual(302, response.status_code)
+        User.objects.all().delete()
+
+    def test_signup_email_just_below_max_legal_length(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+        User.objects.all().delete()
+        
+        emailTestValue = "a"*241 + "@hotmail.com"
         data = createSignupContent(["email", "email_confirmation"], [emailTestValue, emailTestValue])
         request = self.getSignupRequest(data)
         response = signup(request)
