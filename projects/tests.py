@@ -688,7 +688,6 @@ class OutputCoverageTestSuite(TestCase):
         })
         self.assertEqual(response.context['project'], self.owner_project)
         self.assertEqual(check_taskoffers(self.project_task_2, self.freelancer)[0].status, 'a')
-        print(check_taskoffers(self.project_task_2, self.freelancer))
 
 class MakeOfferTitleTestSuite(TestCase):
     def setUp(self):
