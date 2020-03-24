@@ -335,6 +335,8 @@ def task_view(request, project_id, task_id):
             Delivery, id=request.POST.get('delivery-id'))
         deliver_response_form = TaskDeliveryResponseForm(
             request.POST, instance=instance)
+        delivery_rating_form = TaskDeliveryRatingForm(
+            request.POST, instance=instance)
         if deliver_response_form.is_valid():
             delivery = deliver_response_form.save()
             from django.utils import timezone
