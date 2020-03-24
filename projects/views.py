@@ -139,6 +139,8 @@ def project_view(request, project_id):
                     offer_response.task.read.add(offer_response.offerer)
                     offer_response.task.write.add(offer_response.offerer)
                     project = offer_response.task.project
+                    print("this guy should be added to the project!")
+                    print(offer_response.offerer)
                     project.participants.add(offer_response.offerer)
                     project.save()
 
