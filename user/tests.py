@@ -470,7 +470,6 @@ class SignupCategoriesTestSuite(TestCase):
         self.assertEqual(200, response.status_code)
         User.objects.all().delete()
 
-
 class SignupCompanyTestSuite(TestCase):
     def setUp(self):
         self.client = Client()
@@ -827,7 +826,6 @@ class SignupStateTestSuite(TestCase):
         self.assertEqual(200, response.status_code)
         User.objects.all().delete()
 
-
 class SignupCityTestSuite(TestCase):
     def setUp(self):
         self.client = Client()
@@ -942,7 +940,6 @@ class SignupCityTestSuite(TestCase):
         self.assertEqual(200, response.status_code)
         User.objects.all().delete()
 
-
 class SignupPostalCodeTestSuite(TestCase):
     def setUp(self):
         self.client = Client()
@@ -1056,7 +1053,6 @@ class SignupPostalCodeTestSuite(TestCase):
         self.assertEqual(len(createdUsers), 0)
         self.assertEqual(200, response.status_code)
         User.objects.all().delete()
-
 
 class SignupStreetAddressTestSuite(TestCase):
     def setUp(self):
@@ -1372,7 +1368,6 @@ class SignupEmailTestSuite(TestCase):
         self.assertEqual(200, response.status_code)
         User.objects.all().delete()
 
-
 class TwoWayDomainTestSuite(TestCase):
     def setUp(self):
         self.client = Client()
@@ -1589,7 +1584,6 @@ class TwoWayDomainTestSuite(TestCase):
         self.assertEqual(302, response.status_code)
         User.objects.all().delete()
 
-
 class SignupDescriptionTestSuite(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
@@ -1781,3 +1775,50 @@ class EditDescriptionTestSuite(TestCase):
         self.assertEqual(response.status_code, 302)
         profileAfter = Profile.objects.all().first()
         self.assertEqual(profileAfter.description, descriptionAfter)
+
+class EditEmailNotificationPreferencesTestSuite(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(
+            username='chrsitopher',
+            first_name='Christopher',
+            last_name='Columbus',
+            email='criscol@atlanticocean.com',
+        )
+        self.user_profile = Profile.objects.get(user=self.user)
+        self.user_profile.description = "This is not an empty description"
+    
+    def getUpdateProfileRequest(self, data, user):
+        request = self.factory.post('/user/'+str(self.user.username), data)
+        request.user = user
+        setattr(request, 'session', 'session')
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        return request
+
+    def test_email_preferences_should_update(self):
+        self.assertTrue(self.user_profile.email_notifications)
+
+        data = {
+            "description": "This is not an empty description",
+            "email_notifications": False,
+        }
+        request = self.getUpdateProfileRequest(data, self.user)
+
+        response = update_profile(request)
+        profileAfter = Profile.objects.all().first()
+
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(profileAfter.email_notifications)
+
+        data = {
+            "description": "This is not an empty description",
+            "email_notifications": True,
+        }
+        request = self.getUpdateProfileRequest(data, self.user)
+
+        response = update_profile(request)
+        profileAfter = Profile.objects.all().first()
+
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(profileAfter.email_notifications)
