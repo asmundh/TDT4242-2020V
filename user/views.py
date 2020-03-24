@@ -41,8 +41,16 @@ def signup(request):
             user.refresh_from_db()
 
             user.profile.company = form.cleaned_data.get('company')
-
+            user.profile.country = form.cleaned_data.get('country')
+            user.profile.state = form.cleaned_data.get('state')
+            user.profile.city = form.cleaned_data.get('city')
+            user.profile.postal_code = form.cleaned_data.get('postal_code')
+            user.profile.phone_number = form.cleaned_data.get('phone_number')
+            user.profile.street_address = form.cleaned_data.get('street_address')
+            user.profile.description = form.cleaned_data.get('description')
+            user.profile.company = form.cleaned_data.get('company')
             user.is_active = False
+
             user.profile.categories.add(*form.cleaned_data['categories'])
             user.save()
             # TODO - fix raw_password
