@@ -5,6 +5,7 @@ from projects.views import project_view, get_user_task_permissions
 from .models import Project, Task, TaskFile, TaskOffer, Delivery, ProjectCategory, Team, TaskFileTeam, directory_path
 from user.models import User, Profile
 from django.urls import reverse
+from .views import task_view
 from .templatetags.project_extras import get_accepted_task_offer, check_taskoffers, get_project_participants, get_project_participants_string
 from django.contrib.messages.storage.fallback import FallbackStorage
 
@@ -1233,3 +1234,127 @@ class EmailOnNewOfferTestSuite(TestCase):
         # print("alert" in response.content.decode("utf-8"))
         alertShowing = "alert" in response.content.decode("utf-8")
         self.assertFalse(alertShowing)
+
+
+class GetAverageRatingTestSuite(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.category = ProjectCategory.objects.create(pk=1, name="Gardening")
+
+        self.project_owner_user = User.objects.create_user(
+            pk=1,
+            username='Project_owner',
+            email='proj_owner@gmail.com',
+            password='HemmeligWooo213'
+        )
+        self.project_owner_user_profile = Profile.objects.get(user=self.project_owner_user)
+        self.project_bidder_user = User.objects.create_user(
+            username='Project_bidder',
+            email='proj_bidder@gmail.com',
+            password='HemmeligWooo213'
+        )
+        self.project_bidder_user_profile = Profile.objects.get(user=self.project_bidder_user)
+        self.test_project1 = Project.objects.create(
+            pk=1,
+            user=self.project_owner_user_profile,
+            title='Test Project',
+            description='This is nothing more than a test. Stay calm.',
+            category=self.category,
+            status="o"
+        )
+        self.test_project2 = Project.objects.create(
+            pk=2,
+            user=self.project_owner_user_profile,
+            title='Test Project',
+            description='This is nothing more than a test. Stay calm.',
+            category=self.category,
+            status="o"
+        )
+        self.task_1 = Task.objects.create(
+            pk=1,
+            project=self.test_project1,
+            title='This task is purely for testing. I will not pay',
+            description='^Same as above',
+            budget=20
+        )
+        self.task_2 = Task.objects.create(
+            pk=2,
+            project=self.test_project2,
+            title='This task is purely for testing. I will not pay',
+            description='^Same as above',
+            budget=20
+        )
+        self.task_1_offer = TaskOffer.objects.create(
+            task = self.task_1,
+            title = "Task1 Offer",
+            description = "Task1 description",
+            price = 1000,
+            offerer = self.project_bidder_user_profile,
+            status = 'a' 
+        )
+        self.task_2_offer = TaskOffer.objects.create(
+            task = self.task_2,
+            title = "Task1 Offer",
+            description = "Task1 description",
+            price = 1000,
+            offerer = self.project_bidder_user_profile,
+            status = 'a' 
+        )
+
+        self.delivery_1 = Delivery.objects.create(
+            pk = 1,
+            task = self.task_1,
+            comment = "test",
+            delivery_user = self.project_bidder_user_profile
+        )
+
+        self.delivery_2 = Delivery.objects.create(
+            pk = 2,
+            task = self.task_2,
+            comment = "test",
+            delivery_user = self.project_bidder_user_profile
+        )
+
+
+    def makeDeliveryResponse(self, project, task, user, data):
+        request = self.factory.post('/project/'+str(project.id) + "/" + str(task.id) + "/", data)
+        request.user = user
+        setattr(request, 'session', 'session')
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        return request
+
+
+    def test_average_rating_should_be_zero_if_no_ratings(self):
+        self.assertEqual(self.project_owner_user_profile.get_average_rating, 0)
+    
+    def makeData(self, valToChange, value):
+        data = {
+            "status": 'a',
+            "feedback": "Looking good", 
+            "rating": 4,
+            "delivery-id": self.delivery_1.id,
+            "delivery-response": True
+        }
+    
+        if (type(valToChange) == type([])):
+            for i in range(len(valToChange)):
+                data[valToChange[i]] = value[i]
+        elif (type(valToChange) == type("")):
+            data[valToChange] = value
+        return data
+
+    def test_average_rating(self):
+        rating1, rating2 = 5, 2
+        data1 = self.makeData(["rating", "delivery-id"], [rating1, self.delivery_1.id])
+        request = self.makeDeliveryResponse(self.test_project1, self.task_1, self.project_owner_user, data1)
+        response = task_view(request, self.test_project1.id, self.task_1.id)
+
+        data2 = self.makeData(["rating", "delivery-id"], [rating2, self.delivery_2.id])
+        request = self.makeDeliveryResponse(self.test_project2, self.task_2, self.project_owner_user, data2)
+        response = task_view(request, self.test_project2.id, self.task_2.id)
+
+        profile = Profile.objects.get(user=self.project_bidder_user)
+        self.assertEqual(profile.get_average_rating, (rating1 + rating2) / 2)
+        self.assertEqual(profile.get_rating_count, 2)
+        self.assertEqual(response.status_code, 200)
