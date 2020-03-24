@@ -1,8 +1,9 @@
 from django.test import TestCase
 from django.test import TestCase, Client, RequestFactory
-from .views import signup
+from .views import signup, update_profile
 from .forms import SignUpForm
 from user.models import User, Profile
+from home.views import home
 from projects.models import ProjectCategory
 from django.contrib.messages.storage.fallback import FallbackStorage
 from allpairspy import AllPairs
@@ -43,7 +44,7 @@ def createSignupContent(fieldToTest, valueForField):
     'postal_code': legalFiftyCharFieldValue,
     'street_address': legalFiftyCharFieldValue,
     'categories': legalCategory,
-    'description': 'testDesc',
+    'description': "testDesc",
     }
     
     if (type(fieldToTest) == type([])):
@@ -1526,7 +1527,6 @@ class TwoWayDomainTestSuite(TestCase):
         print(f'There were {i-1} number of invalid cases')
         workbook.close()
     
-
     def test_two_way_domain_special_cases_password_1(self):
         input_field_1 = "password1"
         input_field_2 = "password2"
@@ -1588,3 +1588,196 @@ class TwoWayDomainTestSuite(TestCase):
         self.assertEqual(len(createdUsers), 0) 
         self.assertEqual(302, response.status_code)
         User.objects.all().delete()
+
+
+class SignupDescriptionTestSuite(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.client = Client()
+        self.category = ProjectCategory.objects.create(name="Painting")
+
+    def getSignupRequest(self, data):
+        request = self.factory.post('/signup', data)
+        setattr(request, 'session', 'session')
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        
+        return request
+
+    def test_signup_description_minimum_value(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+        
+        descriptionTestValue = ""
+        data = createSignupContent("description", descriptionTestValue)
+        request = self.getSignupRequest(data)
+        response = signup(request)
+        createdUsers = User.objects.all()
+
+        self.assertEqual(len(createdUsers), 1)
+        self.assertEqual(302, response.status_code)
+        User.objects.all().delete()
+
+    def test_signup_description_just_above_min_legal_length(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+        
+        descriptionTestValue = "a"*1
+        data = createSignupContent("description", descriptionTestValue)
+        request = self.getSignupRequest(data)
+        response = signup(request)
+        createdUsers = User.objects.all()
+
+        self.assertEqual(len(createdUsers), 1)
+        self.assertEqual(302, response.status_code)
+        User.objects.all().delete()
+
+    def test_signup_description_legal_value(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+        User.objects.all().delete()
+        
+        descriptionTestValue = "a"*600
+        data = createSignupContent("description", descriptionTestValue)
+        request = self.getSignupRequest(data)
+        response = signup(request)
+        createdUsers = User.objects.all()
+
+    def test_signup_description_just_below_max_legal_length(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+
+        descriptionValue = "a"*1999
+        data = createSignupContent("description", descriptionValue)
+
+        request = self.getSignupRequest(data)
+        
+        response = signup(request)
+        self.assertEqual(302, response.status_code)
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 1)
+        User.objects.all().delete()
+
+    def test_signup_description_max_value(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+        
+        descriptionTestValue = "a"*2000
+        data = createSignupContent("description", descriptionTestValue)
+        request = self.getSignupRequest(data)
+        response = signup(request)
+        createdUsers = User.objects.all()
+
+    def test_signup_description_too_long(self):
+        createdUsers = User.objects.all()
+        self.assertEqual(len(createdUsers), 0)
+
+        descriptionTestValue = "a"*2001
+        data = createSignupContent("description", descriptionTestValue)
+        request = self.getSignupRequest(data)
+        response = signup(request)
+        createdUsers = User.objects.all()
+
+        self.assertEqual(len(createdUsers), 0)
+        self.assertEqual(200, response.status_code)
+        User.objects.all().delete()
+
+class DescriptionBannerShowingCorrectlyTestSuite(TestCase):
+
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.client = Client()
+        self.category = ProjectCategory.objects.create(name="Painting")
+
+    
+    def getSignupRequest(self, data):
+        request = self.factory.post('/signup', data)
+        setattr(request, 'session', 'session')
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        
+        return request
+
+    def getHomeRequest(self, user):
+        request = self.factory.get('/home')
+        request.user = user
+        setattr(request, 'session', 'session')
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        
+        return request
+
+    def test_banner_should_not_show_when_description_is_set(self):
+        existingUsers = User.objects.all()
+        self.assertEqual(len(existingUsers), 0)
+        
+        descriptionValue = "This is not an empty description"
+        data = createSignupContent("description", descriptionValue)
+        request = self.getSignupRequest(data)
+        response = signup(request)
+
+        createdUsers = Profile.objects.all()
+        self.assertEqual(len(createdUsers), 1)
+        self.assertEqual(302, response.status_code)
+        self.assertEqual(createdUsers.first().description, descriptionValue)
+
+        self.client.login(username=thirtyChars, password=legalPassword)
+        resp = self.getHomeRequest(createdUsers.first().user)
+        homeScreenResponse = home(resp)
+        alertShowing = "alert" in homeScreenResponse.content.decode("utf-8")
+        self.assertFalse(alertShowing)
+
+    def test_banner_should_show_when_description_is_not_set(self):
+        existingUsers = User.objects.all()
+        self.assertEqual(len(existingUsers), 0)
+        
+        descriptionValue = ""
+        data = createSignupContent("description", descriptionValue)
+        request = self.getSignupRequest(data)
+        response = signup(request)
+
+        createdUsers = Profile.objects.all()
+        self.assertEqual(len(createdUsers), 1)
+        self.assertEqual(302, response.status_code)
+        self.assertEqual(createdUsers.first().description, descriptionValue)
+
+        self.client.login(username=thirtyChars, password=legalPassword)
+        resp = self.getHomeRequest(createdUsers.first().user)
+        homeScreenResponse = home(resp)
+        alertShowing = "alert" in homeScreenResponse.content.decode("utf-8")
+        self.assertTrue(alertShowing)
+
+class EditDescriptionTestSuite(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.client = Client()
+    
+    def getUpdateProfileRequest(self, data, user):
+        request = self.factory.post('/user/'+str(self.user.username), data)
+        request.user = user
+        setattr(request, 'session', 'session')
+        messages = FallbackStorage(request)
+        setattr(request, '_messages', messages)
+        return request
+
+    def test_description_should_update(self):
+        descriptionBefore = "This is not an empty description"
+        descriptionAfter = "This is an entirely new description"
+        self.user = User.objects.create_user(
+            username='chrsitopher',
+            first_name='Christopher',
+            last_name='Columbus',
+            email='criscol@atlanticocean.com',
+        )
+        self.user_profile = Profile.objects.get(user=self.user)
+        self.user_profile.description = descriptionBefore
+        data = {
+            "description": descriptionAfter,
+            "email_notifications": True,
+        }
+        request = self.getUpdateProfileRequest(data, self.user)
+        self.assertEqual(self.user_profile.description, descriptionBefore)
+        response = update_profile(request)
+        self.assertEqual(response.status_code, 302)
+        profileAfter = Profile.objects.all().first()
+        self.assertEqual(profileAfter.description, descriptionAfter)
