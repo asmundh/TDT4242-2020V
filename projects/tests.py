@@ -281,8 +281,6 @@ class GetUserTaskPermissionsTest(TestCase):
         self.assertIs(task_permissions['upload'], False)
         self.assertIs(task_permissions['view_task'], True)
 
-
-
 class ProjectViewTestSuite(TestCase):
 
     def setUp(self):
@@ -393,7 +391,6 @@ class ProjectViewTestSuite(TestCase):
         self.assertEqual(200, response.status_code)
         TaskOffer.objects.all().delete()
 
-##############################################################################################################
 class OutputCoverageTestSuite(TestCase):
     '''
     This test case will test all possible outputs related to sending a task offer. This encompasses:
@@ -993,7 +990,6 @@ class MakeOfferDescriptionTestSuite(TestCase):
         self.assertEqual(len(newProjectOffers), 0)
         TaskOffer.objects.all().delete()
 
-
 class MakeOfferPriceTestSuite(TestCase):
     def setUp(self):
         self.project_owner_user = User.objects.create_user(
@@ -1147,3 +1143,93 @@ class MakeOfferPriceTestSuite(TestCase):
         newProjectOffers = TaskOffer.objects.all()
         self.assertEqual(len(newProjectOffers), 0)
         TaskOffer.objects.all().delete()
+
+class EmailOnNewOfferTestSuite(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.category = ProjectCategory.objects.create(pk=1, name="Gardening")
+
+        self.project_owner_user = User.objects.create_user(
+            pk=1,
+            username='Project_owner',
+            email='proj_owner@gmail.com',
+            password='HemmeligWooo213'
+        )
+        self.project_owner_user_profile = Profile.objects.get(user=self.project_owner_user)
+        self.project_bidder_user = User.objects.create_user(
+            username='Project_bidder',
+            email='proj_bidder@gmail.com',
+            password='HemmeligWooo213'
+        )
+        self.test_project = Project.objects.create(
+            pk=1,
+            user=self.project_owner_user_profile,
+            title='Test Project',
+            description='This is nothing more than a test. Stay calm.',
+            category=self.category,
+            status="o"
+        )
+        self.task_1 = Task.objects.create(
+            pk=1,
+            project=self.test_project,
+            title='This task is purely for testing. I will not pay',
+            description='^Same as above',
+            budget=20
+        )
+
+    def test_email_sent_if_notifications_true(self):
+        self.assertTrue(self.project_owner_user_profile.email_notifications)
+
+        offers = TaskOffer.objects.all()
+        self.assertEqual(len(offers), 0)
+        data = {
+                'offer_submit': True,
+                'title': 'This is purely a test offer. I have not actually done anything.',
+                'description': 'Same as above.',
+                'price': 20,
+                'taskvalue': self.task_1.id
+            }
+        post = self.factory.post('/project/'+str(self.project_bidder_user.id), data)
+        setattr(post, 'session', 'session')
+        messages = FallbackStorage(post)
+        setattr(post, '_messages', messages)
+        post.user = self.project_bidder_user
+
+        response = project_view(post, self.test_project.id)
+        offers = TaskOffer.objects.all()
+        self.assertEqual(len(offers), 1)
+        self.assertEqual(200, response.status_code)
+        TaskOffer.objects.all().delete()
+        # print("alert" in response.content.decode("utf-8"))
+        alertShowing = "alert" in response.content.decode("utf-8")
+        self.assertTrue(alertShowing)
+
+    def test_email_not_sent_if_notifications_false(self):
+        self.project_owner_user_profile.email_notifications = False
+        self.project_owner_user_profile.save()
+
+        self.assertFalse(self.project_owner_user_profile.email_notifications)
+
+        offers = TaskOffer.objects.all()
+        self.assertEqual(len(offers), 0)
+        data = {
+                'offer_submit': True,
+                'title': 'This is purely a test offer. I have not actually done anything.',
+                'description': 'Same as above.',
+                'price': 20,
+                'taskvalue': self.task_1.id
+            }
+        post = self.factory.post('/project/'+str(self.project_bidder_user.id), data)
+        setattr(post, 'session', 'session')
+        messages = FallbackStorage(post)
+        setattr(post, '_messages', messages)
+        post.user = self.project_bidder_user
+
+        response = project_view(post, self.test_project.id)
+        offers = TaskOffer.objects.all()
+        self.assertEqual(len(offers), 1)
+        self.assertEqual(200, response.status_code)
+        TaskOffer.objects.all().delete()
+        # print("alert" in response.content.decode("utf-8"))
+        alertShowing = "alert" in response.content.decode("utf-8")
+        self.assertFalse(alertShowing)
