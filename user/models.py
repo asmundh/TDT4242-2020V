@@ -32,10 +32,10 @@ class Profile(models.Model):
         else:
             return 0
 
+    @property
     def get_rating_count(self):
         queried_deliveries = apps.get_model(
             'projects.delivery').objects.filter(delivery_user=self)
-        print(queried_deliveries)
         return queried_deliveries.count()
 
     def __str__(self):
