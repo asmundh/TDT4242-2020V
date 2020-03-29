@@ -171,5 +171,6 @@ User Profile with description
 <h3>5.3 Use case 3</h3>
 <h4>5.3.1 Design</h4>
 <h4>5.3.2 Tests</h4>
-
-  
+Running cypress tests:
+- npm install
+- npx cypress open
