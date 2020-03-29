@@ -120,3 +120,7 @@ venv.bak/
 
 # Visual Studio Code
 .vscode/
+
+# Node and NPM
+.node_modules/
+.cypress/cypress/integration/examples/

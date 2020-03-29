@@ -1,0 +1,19 @@
+{
+  "name": "agreelance",
+  "version": "1.0.0",
+  "description": "Åsmund Haugse & Odd Gunnar Aspaas",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "python manage.py loaddata seed.json & python manage.py runserver & sleep 4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.stud.idi.ntnu.no:aasmuha/tdt4242-t26.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "cypress": "^4.2.0"
+  }
+}

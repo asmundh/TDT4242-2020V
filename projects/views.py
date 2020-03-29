@@ -139,8 +139,6 @@ def project_view(request, project_id):
                     offer_response.task.read.add(offer_response.offerer)
                     offer_response.task.write.add(offer_response.offerer)
                     project = offer_response.task.project
-                    print("this guy should be added to the project!")
-                    print(offer_response.offerer)
                     project.participants.add(offer_response.offerer)
                     project.save()
 
@@ -185,8 +183,7 @@ def project_view(request, project_id):
                             mail.EmailMessage(
                                 "Your Project: " + project_name +
                                 "has a new offer on task: " + task_title + "!",  # title
-                                f'''The entrepeneur  {sender.user.first_name} {sender.user.last_name} has given you an offer on task {task_title} related to project {project_name}. \n You should let him or her know if you accept the offer! \n \nFind your project at {current_site.domain}/projects/{str(project.id)}
-                                ''',  # content
+                                f'''The entrepeneur  {sender.user.first_name} {sender.user.last_name} has given you an offer on task {task_title} related to project {project_name}. \n You should let him or her know if you accept the offer! \n \nFind your project at {current_site.domain}/projects/{str(project.id)}''',  # content
                                 dummy_mail,  # sender
                                 [dummy_mail, owner.email],  # reciever
                                 connection=connection,
