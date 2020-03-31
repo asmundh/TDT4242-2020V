@@ -9,17 +9,24 @@
 // ***********************************************
 //
 //
-// -- This is a parent command --
-// Cypress.Commands.add("login", (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add("dismiss", { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+Cypress.Commands.add("login", (username, password) => {
+    cy.visit('http://localhost:8000/')
+    cy.contains('Sign in').click()
+
+    cy.get('input[name="username"]').type(username)
+    cy.get('input[name="password"]').type(password)
+    cy.get('button[type=submit]').click()
+    })
+
+Cypress.Commands.add("reset_db_only_categories", () => {
+    cy.exec('python manage.py flush --no-input')
+    cy.exec('python manage.py loaddata test_seed_categories.json')
+    })
+
+Cypress.Commands.add("init_test_db", () => {
+    cy.exec('rm -r db.sqlite3')
+    cy.exec('python manage.py migrate')
+    cy.exec('python manage.py loaddata test_seed_full_db.json')
+ })
+
