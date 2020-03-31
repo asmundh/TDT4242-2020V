@@ -27,7 +27,7 @@ e2e-setup:
     - python manage.py runserver &
     - sleep 3
     - curl http://127.0.0.1:8000/
-    - npx cypress run
+    - npx cypress run --config video=false
 
 staging:
   type: deploy

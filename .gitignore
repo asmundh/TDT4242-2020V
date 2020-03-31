@@ -123,4 +123,5 @@ venv.bak/
 
 # Node and NPM
 .node_modules/
+node_modules/
 .cypress/cypress/integration/examples/

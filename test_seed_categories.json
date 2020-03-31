@@ -1,0 +1,17 @@
+[
+    {
+        "model": "projects.projectcategory",
+        "pk": 1,
+        "fields": { "name": "Cleaning" }
+    },
+    {
+        "model": "projects.projectcategory",
+        "pk": 2,
+        "fields": { "name": "Painting" }
+    },
+    {
+        "model": "projects.projectcategory",
+        "pk": 3,
+        "fields": { "name": "Gardening" }
+    }
+]
