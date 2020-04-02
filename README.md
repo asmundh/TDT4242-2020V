@@ -26,7 +26,7 @@
     5.3 [Use case 3](#53-use-case-3)  
       5.3.1 [Design](#531-design)  
       5.3.2 [Tests](#532-tests)  
-
+6. [Test database](#6-testdatabase)
 <h2>1. Introduction</h2>
 During this exercise we will practice software development in the DevOps 
 environment and white-box and black-box testing approach. 
@@ -174,3 +174,22 @@ User Profile with description
 Running cypress tests:
 - npm install
 - npx cypress open
+- 
+
+<h2>6. Testdatabase</h2>
+
+All accounts password is "Bollorogbrus1_"
+
+| Entity            | information                                           |
+| ----------------- | ---------------------------------------------------   |
+| **Users**         |                                                       |
+|  admin            | Superuser                           |                                                                                                                                                                                                                                          |
+|  harrypotter      |                                     |                                                                                                                                                                                                                                          |
+|  raggen           |                                                       |                                                                                                                                                                                                                                          |
+|  joe              |                                                       |                                                                                                                                                                                                                                          |
+| **Projects**      |                                           |
+| Fixing the outside of my house      |   Owner: admin, Participants: joe, Status: open, tasks:  Painting and gardening  | 
+| My test project      |   Owner: harrypotter, Participants: , Status: open, tasks:  My test project  | 
+| Project with 2 tasks - open      |   Owner: raggen, Participants: , Status: open, tasks:  Clean the car, Take out trash  | 
+| Project with 2 tasks - in progress     |   Owner: raggen, Participants: harrypotter, Status: in progress, tasks: Wash the floor, dont mind me   |                                                                                                                                                                                                                                 |
+
