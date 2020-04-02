@@ -1,8 +1,6 @@
 describe("Registration tests", function() {
     before(function() {
-        cy.exec('rm -r db.sqlite3')
-        cy.exec('python manage.py migrate')
-        cy.exec('python manage.py loaddata seed.json')
+        cy.init_test_db()
     })
 
     it("Should register a new user and redirect to /projects", function() {
