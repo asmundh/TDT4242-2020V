@@ -30,3 +30,9 @@ Cypress.Commands.add("init_test_db", () => {
     cy.exec('python manage.py loaddata test_seed_full_db.json')
  })
 
+ Cypress.Commands.add("init_db_by_seed", (seedFileName) => {
+    cy.exec('rm -r db.sqlite3')
+    cy.exec('python manage.py migrate')
+    cy.exec(`python manage.py loaddata cypress/seeds/${seedFileName}`)
+ })
+
