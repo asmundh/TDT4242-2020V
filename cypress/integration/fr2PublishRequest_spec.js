@@ -1,4 +1,4 @@
-describe("FR2 Publish request", function() { 
+describe("FR2 Publish project request", function() { 
     it("Sign in and create project with tasks", function() {
         // load authenticated users
         cy.init_test_db()
