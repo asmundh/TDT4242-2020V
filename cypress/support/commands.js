@@ -9,6 +9,7 @@
 // ***********************************************
 //
 //
+import 'cypress-file-upload'
 
 Cypress.Commands.add("login", (username, password) => {
     cy.visit('http://localhost:8000/')

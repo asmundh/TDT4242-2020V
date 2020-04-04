@@ -153,6 +153,14 @@
     },
     {
         "model": "sessions.session",
+        "pk": "wkrivy6y7x8vvanq5h4i78855wcg772z",
+        "fields": {
+            "session_data": "NTliOGM5ZGEyMzQ3NTI5YjQ0NzdjYjE5OWZmYjVmMTgwYmMwYzAyMzp7Il9hdXRoX3VzZXJfaWQiOiIzIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiJkOGI1ZDhlOGU5NDQ3YTk5ZjY1ODM4YzIzZDg2NzMwMjE4MDUzZTVjIn0=",
+            "expire_date": "2020-04-16T14:31:14.631Z"
+        }
+    },
+    {
+        "model": "sessions.session",
         "pk": "wvf33klpsvhi2oqlzsoh5ds6d2f0fsdf",
         "fields": {
             "session_data": "NTliOGM5ZGEyMzQ3NTI5YjQ0NzdjYjE5OWZmYjVmMTgwYmMwYzAyMzp7Il9hdXRoX3VzZXJfaWQiOiIzIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiJkOGI1ZDhlOGU5NDQ3YTk5ZjY1ODM4YzIzZDg2NzMwMjE4MDUzZTVjIn0=",
@@ -249,7 +257,8 @@
                 1
             ],
             "write": [
-                1
+                1,
+                2
             ],
             "modify": []
         }
@@ -271,6 +280,18 @@
                 1
             ],
             "modify": []
+        }
+    },
+    {
+        "model": "projects.team",
+        "pk": 1,
+        "fields": {
+            "name": "Administering",
+            "task": 2,
+            "write": true,
+            "members": [
+                2
+            ]
         }
     },
     {
@@ -893,7 +914,7 @@
         "pk": 1,
         "fields": {
             "password": "pbkdf2_sha256$120000$PPYAg5H8rJMd$HtPRRskTwyGeS4OfD0uGHTi0zz6kk3LXe047ULSs1eo=",
-            "last_login": "2020-03-31T13:42:16.533Z",
+            "last_login": "2020-04-02T14:31:08.990Z",
             "is_superuser": true,
             "username": "admin",
             "first_name": "",
@@ -929,7 +950,7 @@
         "pk": 3,
         "fields": {
             "password": "pbkdf2_sha256$120000$v65mxfD9YgRY$YrzXu5Mff0m2rS93IYc04MuzHWxVi7i1qgt0Ud1nLas=",
-            "last_login": "2020-04-02T11:27:18.064Z",
+            "last_login": "2020-04-02T14:31:14.624Z",
             "is_superuser": false,
             "username": "joe",
             "first_name": "Joe",
