@@ -6,32 +6,33 @@ describe("Feedback and project status tests", function() {
         cy.init_db_by_seed(seedFileName)
     })
 
-    // it("Should log into customer account and review their delivery(FR14, FR16, FR17, FR23", function() {
-    //     cy.login('joe', 'qwerty123')
-    //     cy.contains('FR5 Clean my ship').click()
-    //     cy.get('a[href="/projects/2/tasks/2/"]').click()
-    //     cy.contains('Respond').click()
+    it("Should log into customer account and review their delivery(FR14, FR16, FR17, FR23", function() {
+        cy.login('joe', 'qwerty123')
+        cy.contains('FR5 Clean my ship').click()
+        cy.get('a[href="/projects/2/tasks/2/"]').click()
+        cy.contains('Respond').click()
 
-    //     cy.get('select[id="id_status"]').select('Accepted').invoke('val')
-    //     cy.get('textarea[id="id_feedback"]').type('Supert smupert!')
-    //     cy.wait(200)
-    //     cy.get('input[id="id_rating"]').type(4)
-    //     cy.contains('Send Response').click()
+        cy.get('select[id="id_status"]').select('Accepted').invoke('val')
+        cy.get('textarea[id="id_feedback"]').type('Supert smupert!')
+        cy.wait(200)
+        cy.get('input[id="id_rating"]').type(4)
+        cy.contains('Send Response').click()
 
-    //     cy.contains('Pay').click()
+        cy.contains('Pay').click()
 
-    //     cy.get('input[id="id_cardnumber"]').type('123948172')
-    //     cy.get('input[id="id_expirymonth"]').type('08')
-    //     cy.get('input[id="id_expiryyear"]').type('21')
-    //     cy.get('input[id="id_cvc"]').type('314')
-    //     cy.get('button[type="submit"]').click()
+        cy.get('input[id="id_cardnumber"]').type('123948172')
+        cy.get('input[id="id_expirymonth"]').type('08')
+        cy.get('input[id="id_expiryyear"]').type('21')
+        cy.get('input[id="id_cvc"]').type('314')
+        cy.get('button[type="submit"]').click()
 
-    //     cy.visit('http://localhost:8000/user/admin/')
-    //     cy.get('div[id="rating"]').contains(4.0)
-    //     cy.contains('1 REVIEWS')
-    // })
+        cy.visit('http://localhost:8000/user/admin/')
+        cy.get('div[id="rating"]').contains(4.0)
+        cy.contains('1 REVIEWS')
+    })
 
     it('Should give poor feedback on project, and project manager must review feedback(FR 15)', function() {
+        cy.init_db_by_seed(seedFileName)
         cy.login('joe', 'qwerty123')
         cy.contains('FR5 Clean my ship').click()
         cy.get('a[href="/projects/2/tasks/2/"]').click()
