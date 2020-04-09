@@ -1,4 +1,7 @@
-# Aggrelance Project
+[![pylint](https://gitlab.stud.idi.ntnu.no/aasmuha/tdt4242-t26/-/jobs/180664/artifacts/file/public/badges/pylint.svg)](https://gitlab.stud.idi.ntnu.no/aasmuha/tdt4242-t26/-/jobs/180664/artifacts/browse/public/lint/)
+
+
+# Agreelance Project
 Åsmund Haugse & Odd Gunnar Aspaas
 
 1. [Introduction](#1-introduction)  
