@@ -5,6 +5,7 @@ stages:
   - test
   - deploy
 
+
 test:
   stage: test
   script:
@@ -12,6 +13,23 @@ test:
     - apt-get update -qy
     - pip install -r requirements.txt
     - coverage run manage.py test
+
+sonarqube-check:
+  image: 
+    name: sonarsource/sonar-scanner-cli:latest
+    entrypoint: [""]
+  stage: test
+  variables:
+    SONAR_TOKEN: $SONAR_TOKEN
+    SONAR_HOST_URL: $SONAR_HOST_URL
+    PWD: "."
+  script:
+    - sonar-scanner
+  only:
+    - merge_requests
+    - dev
+    - master
+
 
 e2e-setup:
   stage: test
