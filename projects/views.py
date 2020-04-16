@@ -12,6 +12,8 @@ from django.core import mail
 
 
 
+loginUrl = '/user/login'
+
 def projects(request):
     projects = Project.objects.all()
     project_categories = ProjectCategory.objects.all()
@@ -23,6 +25,9 @@ def projects(request):
                   }
                   )
 
+def create_failed_mail_string(email, exception):
+    fail_message = 'Sending of email to ' + email + " failed: " + str(exception)
+    return fail_message
 
 @login_required
 def new_project(request):
@@ -52,7 +57,7 @@ def new_project(request):
                     except Exception as e:
                         from django.contrib import messages
                         messages.success(
-                            request, 'Sending of email to ' + person.user.email + " failed: " + str(e))
+                            request, create_failed_mail_string(person.user.email, e))
 
             task_title = request.POST.getlist('task_title')
             task_description = request.POST.getlist('task_description')
@@ -98,7 +103,7 @@ def send_new_offer_email(request):
                     except Exception as e:
                         from django.contrib import messages
                         messages.success(
-                            request, 'Sending of email to ' + person.user.email + " failed: " + str(e))
+                            request, create_failed_mail_string(person.user.email, e))
 
             task_title = request.POST.getlist('task_title')
             task_description = request.POST.getlist('task_description')
@@ -189,11 +194,11 @@ def project_view(request, project_id):
                                 connection=connection,
                             ).send()
                             messages.success(
-                                request, 'Sending of email to ' + owner.email)
+                                request, 'Sending email to ' + owner.email)
 
                     except Exception as e:
                         messages.success(
-                            request, 'Sending of email to ' + owner.email + " failed: " + str(e))
+                            request, create_failed_mail_string(owner.email, e))
         task_offer_form = TaskOfferForm()
 
         return render(request, 'projects/project_view.html', {
@@ -260,7 +265,7 @@ def upload_file_to_task(request, project_id, task_id):
                 'task_file_form': task_file_form,
             }
         )
-    return redirect('/user/login')  # Redirects to /user/login
+    return redirect('loginUrl')  # Redirects to /user/login
 
 
 def get_user_task_permissions(user, task):
@@ -315,7 +320,7 @@ def task_view(request, project_id, task_id):
 
     user_permissions = get_user_task_permissions(request.user, task)
     if not user_permissions['read'] and not user_permissions['write'] and not user_permissions['modify'] and not user_permissions['owner'] and not user_permissions['view_task']:
-        return redirect('/user/login')
+        return redirect('loginUrl')
 
     if request.method == 'POST' and 'delivery' in request.POST:
         if accepted_task_offer and accepted_task_offer.offerer == user.profile:
@@ -431,7 +436,7 @@ def task_view(request, project_id, task_id):
             'delivery_rating_form': delivery_rating_form
         })
 
-    return redirect('/user/login')
+    return redirect('loginUrl')
 
 
 @login_required

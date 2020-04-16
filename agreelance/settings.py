@@ -149,14 +149,15 @@ if not TEST and not is_prod:
     try:
         from agreelance.local_settings import *
     except:
-        print("#########")
+        hashtags ="#########" 
+        print(hashtags)
         print("")
         print("")
         print("Could not load local email settings. Copy local_settings_example to local_settings.")
         print("")
         print("")
-        print("#########")
-        print("#########")
+        print(hashtags)
+        print(hashtags)
 
 if is_prod:
     DEBUG = False

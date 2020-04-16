@@ -52,7 +52,7 @@ describe("FR3 Give offers", function() {
         cy.get('div[id="makeOfferModal2"]').find('textarea[name="description"]').type(offerDescription)
         cy.get('div[id="makeOfferModal2"]').find('input[name="price"]').type(offerPrice)
         cy.get('div[id="makeOfferModal2"]').contains('Send Offer').click()
-        cy.contains(' Sending of email to hp@deskjet.example.com ')
+        cy.contains(' Sending email to hp@deskjet.example.com ')
         cy.wait(1500)
         
         cy.contains('Pending')
