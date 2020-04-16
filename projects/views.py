@@ -133,7 +133,6 @@ def project_view(request, project_id):
         if request.method == 'POST' and 'offer_response' in request.POST:
             instance = get_object_or_404(
                 TaskOffer, id=request.POST.get('taskofferid'))
-            task = instance.task
             offer_response_form = TaskOfferResponseForm(
                 request.POST, instance=instance)
 
@@ -229,7 +228,6 @@ def upload_file_to_task(request, project_id, task_id):
                 existing_file = task.files.filter(
                     file=directory_path(task_file, task_file.file.file)).first()
                 access = user_permissions['modify'] or user_permissions['owner']
-                access_to_file = False  # Initialize access_to_file to false
                 for team in request.user.profile.teams.all():
                     file_modify_access = TaskFileTeam.objects.filter(
                         team=team, file=existing_file, modify=True).exists()
@@ -393,6 +391,7 @@ def task_view(request, project_id, task_id):
                             file=f,
                             team=t,
                         )
+                        print(e)
 
                     instance.read = request.POST.get(
                         'permission-read-' + str(f.id) + '-' + str(t.id)) or False
@@ -414,7 +413,6 @@ def task_view(request, project_id, task_id):
     if user_permissions['read'] or user_permissions['write'] or user_permissions['modify'] or user_permissions['owner'] or user_permissions['view_task']:
         deliveries = task.delivery.all()
         team_files = []
-        teams = user.profile.teams.filter(task__id=task.id).all()
         per = {}
         for f in task.files.all():
             per[f.name()] = {}
