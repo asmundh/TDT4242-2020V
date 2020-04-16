@@ -191,6 +191,3 @@ class TaskOffer(models.Model):
     status = models.CharField(
         max_length=8, choices=STATUS_CHOICES, default=PENDING)
     feedback = models.TextField(max_length=500)
-
-    def calculate_average_task_offer(self):
-        pass
