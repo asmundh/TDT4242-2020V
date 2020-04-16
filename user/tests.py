@@ -1242,8 +1242,7 @@ class SignupPasswordTestSuite(TestCase):
     def test_signup_password_max_value(self):
         created_users = User.objects.all()
         self.assertEqual(len(created_users), 0)
-        # len(bollerogbrus) = 14
-        password_test_value = "Bollerogbruss1_"
+        password_test_value = "Bollerogbruss1_" # length is 14
         data = create_signup_content(["password1", "password2"], [password_test_value, password_test_value])
         request = self.get_signup_request(data)
         response = signup(request)
