@@ -315,127 +315,150 @@ def task_view(request, project_id, task_id):
     project = Project.objects.get(pk=project_id)
     task = Task.objects.get(pk=task_id)
     accepted_task_offer = task.accepted_task_offer()
+    is_request_post = request.method == 'POST'
 
+    
     user_permissions = get_user_task_permissions(request.user, task)
-    if not user_permissions['read'] and not user_permissions['write'] and not user_permissions['modify'] and not user_permissions['owner'] and not user_permissions['view_task']:
-        return redirect('loginUrl')
+    can_user_view_task = can_view_task(user_permissions)
+    if not can_user_view_task:
+        return redirect('/user/login')
 
-    if request.method == 'POST' and 'delivery' in request.POST:
-        if accepted_task_offer and accepted_task_offer.offerer == user.profile:
-            deliver_form = DeliveryForm(request.POST, request.FILES)
-            if deliver_form.is_valid():
-                delivery = deliver_form.save(commit=False)
-                delivery.task = task
-                delivery.delivery_user = user.profile
-                delivery.save()
+    if (is_request_post):
+        if 'delivery' in request.POST:
+            task_view_handle_delivery(request, task, accepted_task_offer, user)
 
-                task.status = "pa"
-                task.save()
+        if 'delivery-response' in request.POST:
+            task_view_handle_delivery_response(request, user, task)
+            
+        if 'team' in request.POST:
+            task_view_handle_team(request, task, accepted_task_offer, user)            
 
-    if request.method == 'POST' and 'delivery-response' in request.POST:
-        instance = get_object_or_404(
-            Delivery, id=request.POST.get('delivery-id'))
-        deliver_response_form = TaskDeliveryResponseForm(
-            request.POST, instance=instance)
-        delivery_rating_form = TaskDeliveryRatingForm(
-            request.POST, instance=instance)
-        if deliver_response_form.is_valid():
-            delivery = deliver_response_form.save()
-            from django.utils import timezone
-            delivery.responding_time = timezone.now()
-            delivery.responding_user = user.profile
+        if 'team-add' in request.POST:
+            task_view_handle_team_add(request, accepted_task_offer, user)
+
+        if 'permissions' in request.POST:
+            task_view_handle_permissions(request, task, accepted_task_offer, user)
+
+
+    if can_user_view_task:
+        return render_view_task(request, project, task, user, user_permissions)
+
+    return redirect('/user/login')
+
+def can_view_task(user_permissions):
+    return user_permissions['read'] or user_permissions['write'] or user_permissions['modify'] or user_permissions['owner'] or user_permissions['view_task']
+
+def task_view_handle_delivery(request, task, accepted_task_offer, user):
+    if accepted_task_offer and accepted_task_offer.offerer == user.profile:
+        deliver_form = DeliveryForm(request.POST, request.FILES)
+        if deliver_form.is_valid():
+            delivery = deliver_form.save(commit=False)
+            delivery.task = task
+            delivery.delivery_user = user.profile
             delivery.save()
+            task.status = "pa"
+            task.save()
+    
+def task_view_handle_delivery_response(request, user, task):
+    instance = get_object_or_404(
+                    Delivery, id=request.POST.get('delivery-id'))
+    deliver_response_form = TaskDeliveryResponseForm(
+        request.POST, instance=instance)
+    delivery_rating_form = TaskDeliveryRatingForm(
+        request.POST, instance=instance)
+    if deliver_response_form.is_valid():
+        delivery = deliver_response_form.save()
+        from django.utils import timezone
+        delivery.responding_time = timezone.now()
+        delivery.responding_user = user.profile
+        delivery.save()
 
-            if delivery.status == 'a':
-                task.status = "pp"
-                task.save()
-            elif delivery.status == 'd':
-                task.status = "dd"
-                task.save()
-            if delivery_rating_form.is_valid():
-                rating_response = delivery_rating_form.save(commit=False)
-                ratingReceived = delivery_rating_form.cleaned_data['rating']
-                rating_response.delivery_rating = ratingReceived
-                rating_response.save()
+        if delivery.status == 'a':
+            task.status = "pp"
+            task.save()
+        elif delivery.status == 'd':
+            task.status = "dd"
+            task.save()
+        if delivery_rating_form.is_valid():
+            rating_response = delivery_rating_form.save(commit=False)
+            ratingReceived = delivery_rating_form.cleaned_data['rating']
+            rating_response.delivery_rating = ratingReceived
+            rating_response.save()
 
-        delivery_rating_form = TaskDeliveryRatingForm()
+    delivery_rating_form = TaskDeliveryRatingForm()
 
-    if request.method == 'POST' and 'team' in request.POST:
-        if accepted_task_offer and accepted_task_offer.offerer == user.profile:
-            team_form = TeamForm(request.POST)
-            if (team_form.is_valid()):
-                team = team_form.save(False)
-                team.task = task
-                team.save()
+def task_view_handle_team(request, task, accepted_task_offer, user):
+    if accepted_task_offer and accepted_task_offer.offerer == user.profile:
+        team_form = TeamForm(request.POST)
+        if (team_form.is_valid()):
+            team = team_form.save(False)
+            team.task = task
+            team.save()
 
-    if request.method == 'POST' and 'team-add' in request.POST:
-        if accepted_task_offer and accepted_task_offer.offerer == user.profile:
-            instance = get_object_or_404(Team, id=request.POST.get('team-id'))
-            team_add_form = TeamAddForm(request.POST, instance=instance)
-            if team_add_form.is_valid():
-                team = team_add_form.save(False)
-                team.members.add(*team_add_form.cleaned_data['members'])
-                team.save()
+def task_view_handle_team_add(request, accepted_task_offer, user):
+    if accepted_task_offer and accepted_task_offer.offerer == user.profile:
+        instance = get_object_or_404(Team, id=request.POST.get('team-id'))
+        team_add_form = TeamAddForm(request.POST, instance=instance)
+        if team_add_form.is_valid():
+            team = team_add_form.save(False)
+            team.members.add(*team_add_form.cleaned_data['members'])
+            team.save()
 
-    if request.method == 'POST' and 'permissions' in request.POST:
-        if accepted_task_offer and accepted_task_offer.offerer == user.profile:
-            for t in task.teams.all():
-                for f in task.files.all():
-                    try:
-                        tft_string = 'permission-perobj-' + \
-                            str(f.id) + '-' + str(t.id)
-                        tft_id = request.POST.get(tft_string)
-                        instance = TaskFileTeam.objects.get(id=tft_id)
-                    except Exception as e:
-                        instance = TaskFileTeam(
-                            file=f,
-                            team=t,
-                        )
-                        print(e)
+def task_view_handle_permissions(request, task, accepted_task_offer, user):            
+    if accepted_task_offer and accepted_task_offer.offerer == user.profile:
+        for t in task.teams.all():
+            for f in task.files.all():
+                try:
+                    tft_string = 'permission-perobj-' + \
+                        str(f.id) + '-' + str(t.id)
+                    tft_id = request.POST.get(tft_string)
+                    instance = TaskFileTeam.objects.get(id=tft_id)
+                except Exception as e:
+                    instance = TaskFileTeam(
+                        file=f,
+                        team=t,
+                    )
 
-                    instance.read = request.POST.get(
-                        'permission-read-' + str(f.id) + '-' + str(t.id)) or False
-                    instance.write = request.POST.get(
-                        'permission-write-' + str(f.id) + '-' + str(t.id)) or False
-                    instance.modify = request.POST.get(
-                        'permission-modify-' + str(f.id) + '-' + str(t.id)) or False
-                    instance.save()
-                t.write = request.POST.get(
-                    'permission-upload-' + str(t.id)) or False
-                t.save()
+                instance.read = request.POST.get(
+                    'permission-read-' + str(f.id) + '-' + str(t.id)) or False
+                instance.write = request.POST.get(
+                    'permission-write-' + str(f.id) + '-' + str(t.id)) or False
+                instance.modify = request.POST.get(
+                    'permission-modify-' + str(f.id) + '-' + str(t.id)) or False
+                instance.save()
+            t.write = request.POST.get(
+                'permission-upload-' + str(t.id)) or False
+            t.save()
 
+def render_view_task(request, project, task, user, user_permissions):
     deliver_form = DeliveryForm()
     deliver_response_form = TaskDeliveryResponseForm()
     delivery_rating_form = TaskDeliveryRatingForm()
     team_form = TeamForm()
     team_add_form = TeamAddForm()
-
-    if user_permissions['read'] or user_permissions['write'] or user_permissions['modify'] or user_permissions['owner'] or user_permissions['view_task']:
-        deliveries = task.delivery.all()
-        team_files = []
-        per = {}
-        for f in task.files.all():
-            per[f.name()] = {}
-            for p in f.teams.all():
-                per[f.name()][p.team.name] = p
-                if p.read:
-                    team_files.append(p)
-        return render(request, 'projects/task_view.html', {
-            'task': task,
-            'project': project,
-            'user_permissions': user_permissions,
-            'deliver_form': deliver_form,
-            'deliveries': deliveries,
-            'deliver_response_form': deliver_response_form,
-            'team_form': team_form,
-            'team_add_form': team_add_form,
-            'team_files': team_files,
-            'per': per,
-            'delivery_rating_form': delivery_rating_form
-        })
-
-    return redirect('loginUrl')
-
+    deliveries = task.delivery.all()
+    team_files = []
+    teams = user.profile.teams.filter(task__id=task.id).all()
+    per = {}
+    for f in task.files.all():
+        per[f.name()] = {}
+        for p in f.teams.all():
+            per[f.name()][p.team.name] = p
+            if p.read:
+                team_files.append(p)
+    return render(request, 'projects/task_view.html', {
+        'task': task,
+        'project': project,
+        'user_permissions': user_permissions,
+        'deliver_form': deliver_form,
+        'deliveries': deliveries,
+        'deliver_response_form': deliver_response_form,
+        'team_form': team_form,
+        'team_add_form': team_add_form,
+        'team_files': team_files,
+        'per': per,
+        'delivery_rating_form': delivery_rating_form
+    })
 
 @login_required
 def task_permissions(request, project_id, task_id):
