@@ -128,3 +128,4 @@ node_modules/
 .cypress/videos/
 cypress/videos/
 .scannerwork
+gitlab-runner-windows-386.exe
