@@ -208,7 +208,7 @@ def project_view(request, project_id):
         })
 
 
-def isProjectOwner(user, project):
+def is_project_owner(user, project):
     return user == project.user.user
 
 
@@ -219,7 +219,7 @@ def upload_file_to_task(request, project_id, task_id):
     user_permissions = get_user_task_permissions(request.user, task)
     accepted_task_offer = task.accepted_task_offer()
 
-    if user_permissions['modify'] or user_permissions['write'] or user_permissions['upload'] or isProjectOwner(request.user, project):
+    if user_permissions['modify'] or user_permissions['write'] or user_permissions['upload'] or is_project_owner(request.user, project):
         if request.method == 'POST':
             task_file_form = TaskFileForm(request.POST, request.FILES)
             if task_file_form.is_valid():
