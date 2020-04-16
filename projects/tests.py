@@ -323,15 +323,6 @@ class ProjectViewTestSuite(TestCase):
             budget=20
         )
 
-        # self.task_1_offer = TaskOffer.objects.create(
-        #     pk=1,
-        #     task=self.task_1,
-        #     title='This offer is purely for testing. I will not actually complete the task',
-        #     description='Same as above',
-        #     price=20,
-        #     offerer=self.user_bidder.profile
-        # )
-
     def test_project_view_offer_response(self):
         task_offer = TaskOffer.objects.create(
             pk=1,
